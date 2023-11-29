@@ -1,0 +1,155 @@
+@charset "utf-8";
+
+html {
+    background: #1c1d26;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    color: rgba(255, 255, 255, 0.75);
+	font-family: "Roboto", Helvetica, sans-serif;
+	font-size: 1.25em;
+	font-weight: 100;
+	line-height: 1.75em;
+    align-items: center;
+}
+
+.wrap {
+    min-height: 100%;
+    margin-bottom: -10%;
+}
+
+.banner {
+    background-color: rgba(0, 0, 0, .6);
+    background-blend-mode: multiply;
+	background-image: url("../images/background.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    width: 100%;
+    border: 0em;
+    margin: 0%;
+    align-items: center;
+    justify-content: center;
+}
+.banner #textio table {
+    border-collapse: separate; /* 設定為獨立的邊框模型 */
+    border-spacing: 0 0.3em; /* 設定水平和垂直的間距 */
+}
+
+.banner #textio td,
+.banner #textio th {
+    border: 1px solid #ffffff; /* 添加白色實線邊框 */
+    padding: 0.5em; /* 調整內邊距 */
+}
+
+.banner #box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1em;
+}
+
+.banner #box #content {
+    margin-top: 11em;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+    .banner #box #content {
+        margin-top: 8em;
+        font-size: 0.8em;
+    }
+    ul {
+        margin-right: -1em;
+    }
+    textarea {
+        width: 20em;
+        height: 30em;
+        margin: 0.5em 1.5em;
+        font-size: 0.9em;
+    }
+    .banner #button {
+        position: relative;
+        margin-top: 3em;
+    }
+}
+
+
+
+.banner #box #content #text {
+    font-size: 2em;
+    color: whitesmoke;
+	margin: 0;
+}
+
+.banner #textio {
+    display: flex;
+    justify-content: center;
+}
+
+.banner #textio ul {
+    margin-top: 2em;
+}
+
+textarea {
+    margin-top: 4em;
+    box-sizing: border-box;
+    width: 12em;  /* 調整搜索框寬度 */
+    height: 3em;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, .6);
+    border: 0;
+    font-family: "Roboto", Helvetica, sans-serif;
+    resize: none;
+    transition: transform 0.3s ease;
+    transform: translateZ(0);
+    font-size: 1.05em;
+    color: #ffffff;
+    padding: 1em;
+    outline: none;
+}
+
+
+textarea:hover {
+    transform: scale(1.05) translateZ(0);
+}
+
+.separator {
+    width: 1em;  /* 調整分隔寬度 */
+    height: 3em;
+    margin-top: 4em;
+}
+
+.banner #button {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5em;
+}
+
+.banner #extract {
+    border-radius: 10px;
+    border: 0;
+}
+button {
+    width: 12em;
+    height: 2em;
+    font-size: 1.05em;
+    background-color: #1c1d26;
+    transition: transform 0.3s ease;
+    transform: translateZ(0);
+    color: #8b8a8a;
+}
+
+button:hover {
+    transform: scale(1.14) translateZ(0);
+}
+
+button:active {
+    transform: scale(0.95);
+}
