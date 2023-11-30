@@ -10,7 +10,7 @@ app = Flask(
 
 # Database setting
 db_config = {
-    "host": "%",
+    "host": "localhost",
     "user": "ECommerceBackendUser",
     "password": "ECommerceBackendUser",
     "database": "ECommerceBackend"
