@@ -10,7 +10,7 @@ app = Flask(
 
 # Database setting
 db_config = {
-    "host": "localhost",
+    "host": "%",
     "user": "ECommerceBackendUser",
     "password": "ECommerceBackendUser",
     "database": "ECommerceBackend"
@@ -19,26 +19,37 @@ db_config = {
 # 路由用來顯示資料
 @app.route("/show_data")
 def show_data():
-    # 連接到 MySQL 資料庫
-    conn = mysql.connector.connect(**db_config)
+    try:
+        # 尝试连接到 MySQL 数据库
+        conn = mysql.connector.connect(**db_config)
 
-    # 創建一個游標物件
-    cursor = conn.cursor()
+        # 创建一个游标对象
+        cursor = conn.cursor()
 
-    # 定義一個簡單的 SQL 查詢
-    sql_query = "SELECT * FROM CustomerInfo;"
+        # 定义一个简单的 SQL 查询
+        sql_query = "SELECT * FROM CustomerInfo;"
 
-    # 執行 SQL 查詢
-    cursor.execute(sql_query)
+        # 执行 SQL 查询
+        cursor.execute(sql_query)
 
-    # 獲取查詢結果
-    result = cursor.fetchall()
+        # 获取查询结果
+        result = cursor.fetchall()
 
-    # 關閉游標和連接
-    cursor.close()
-    conn.close()
+        # 关闭游标和连接
+        cursor.close()
+        conn.close()
 
-    return str(result)
+        return str(result)
+
+    except mysql.connector.Error as err:
+        # 处理连接错误
+        return f"Error: {err}"
+
+    finally:
+        # 最后确保关闭数据库连接
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
 # Home page
 @app.route("/")
