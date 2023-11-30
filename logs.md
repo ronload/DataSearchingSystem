@@ -2,33 +2,7 @@
 
 ## Database
 
-###  Create Tables
-
-1.   `Category`
-
-     **Create**
-
-     ```mysql
-     CREATE TABLE Category (
-          CategoryId VARCHAR(255) PRIMARY KEY,
-          CategoryName VARCHAR(255)
-      );
-     ```
-
-     **Result**
-
-     ```sql
-     desc Category;
-     +--------------+--------------+------+-----+---------+-------+
-     | Field        | Type         | Null | Key | Default | Extra |
-     +--------------+--------------+------+-----+---------+-------+
-     | CategoryId   | varchar(255) | NO   | PRI | NULL    |       |
-     | CategoryName | varchar(255) | YES  |     | NULL    |       |
-     +--------------+--------------+------+-----+---------+-------+
-     2 rows in set (0.00 sec)
-     ```
-
-2.   
+###  Tables
 
 ```shell
 desc CartInfo;
