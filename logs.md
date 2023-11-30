@@ -1,3 +1,37 @@
+## Web Application Architechture
+
+```mermaid
+graph LR
+subgraph home_page
+	search_CustomerInfo
+	search_ProductInfo
+	search_OrderInfo
+	search_CartInfo
+end
+
+search_CustomerInfo --- by_CustomerID
+search_CustomerInfo --- by_CustomerName
+search_CustomerInfo --- by_PhoneNumber
+search_CustomerInfo --- by_Address
+search_CustomerInfo --- by_EmailAddress
+
+search_ProductInfo --- by_Category
+search_ProductInfo --- by_ProductID
+search_ProductInfo --- by_ProductName
+
+search_OrderInfo --- by_OrderId
+search_OrderInfo --- by_OrderDate
+search_OrderInfo --- by_CustomerName
+search_OrderInfo --- by_CustomerID
+
+search_OrderInfo --- by_OrderId
+search_OrderInfo --- by_OrderDate
+search_OrderInfo --- by_CustomerName
+search_OrderInfo --- by_CustomerID
+
+search_CartInfo --- by_CustomerID
+```
+
 
 
 ## Database
@@ -134,3 +168,6 @@ VALUES
 ('CII003', 'CI002', 'P002', 2),
 ('CII004', 'CI002', 'P004', 1);
 ```
+
+
+
