@@ -17,41 +17,6 @@ db_config = {
     "port": 3306
 }
 
-# 路由用來顯示資料
-@app.route("/show_data")
-def show_data():
-    try:
-        # 尝试连接到 MySQL 数据库
-        conn = mysql.connector.connect(**db_config)
-
-        # 创建一个游标对象
-        cursor = conn.cursor()
-
-        # 定义一个简单的 SQL 查询
-        sql_query = "SELECT * FROM CustomerInfo;"
-
-        # 执行 SQL 查询
-        cursor.execute(sql_query)
-
-        # 获取查询结果
-        result = cursor.fetchall()
-
-        # 关闭游标和连接
-        cursor.close()
-        conn.close()
-
-        return str(result)
-
-    except mysql.connector.Error as err:
-        # 处理连接错误
-        return f"Error: {err}"
-
-    finally:
-        # 最后确保关闭数据库连接
-        if conn.is_connected():
-            cursor.close()
-            conn.close()
-
 # Home page
 @app.route("/")
 def index():
@@ -78,17 +43,20 @@ def search_customer_info():
             values = []
 
             # select conditions and values
+            if id:
+                conditions.append("CustomerID LIKE %s")
+                values.append(f"{id}")
             if name:
-                conditions.append("username LIKE %s")
+                conditions.append("CustomerName LIKE %s")
                 values.append(f"%{name}%")
             if phone_number:
-                conditions.append("phonenumber LIKE %s")
+                conditions.append("PhoneNumber LIKE %s")
                 values.append(f"%{phone_number}%")
             if address:
-                conditions.append("address LIKE %s")
+                conditions.append("Address LIKE %s")
                 values.append(f"%{address}%")
             if email:
-                conditions.append("email LIKE %s")
+                conditions.append("EmailAddress LIKE %s")
                 values.append(f"%{email}%")
             
             # build SQL query
