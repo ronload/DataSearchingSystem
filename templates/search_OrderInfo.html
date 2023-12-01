@@ -7,16 +7,41 @@
 </head>
 <body>
     <h1>Search Order Info</h1>
-    <form action="/search_order" method="POST">
-        <label for="by_OrderId">Search by Order ID:</label>
-        <input type="text" id="by_OrderId" name="by_OrderId">
-        <label for="by_OrderDate">Search by Order Date:</label>
+    <form action="/search_OrderInfo" method="POST">
+        <label for="by_OrderID">Order ID:</label>
+        <input type="text" id="by_OrderID" name="by_OrderID">
+        <label for="by_OrderDate">Order Date:</label>
         <input type="text" id="by_OrderDate" name="by_OrderDate">
-        <label for="by_CustomerName">Search by Customer Name:</label>
-        <input type="text" id="by_CustomerName" name="by_CustomerName">
-        <label for="by_CustomerID">Search by Customer ID:</label>
+        <label for="by_CustomerID">Customer ID:</label>
         <input type="text" id="by_CustomerID" name="by_CustomerID">
+        <label for="by_PurchaseStatus">Purchase Status</label>
+        <input type="text" id="by_PurchaseStatus" name="by_PurchaseStatus">
         <input type="submit" value="Search">
     </form>
+    {% if result %}
+        <h2>Search Result:</h2>
+        <table border="1">
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer Name</th>
+                <th>Total Price</th>
+                <th>Purchase Status</th>
+                <th>Products</th>
+            </tr>
+            {% for row in result %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>${{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[5] | safe}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
 </body>
 </html>

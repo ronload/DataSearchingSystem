@@ -8,13 +8,38 @@
 <body>
     <h1>Search Product Info</h1>
     <form action="/search_ProductInfo" method="POST">
-        <label for="by_ProductID">Search by Product ID:</label>
+        <label for="by_ProductID">Product ID:</label>
         <input type="text" id="by_ProductID" name="by_ProductID">
-        <label for="by_ProductName">Search by Product Name:</label>
+        <label for="by_ProductName">Product Name:</label>
         <input type="text" id="by_ProductName" name="by_ProductName">
-        <label for="by_Category">Search by Category:</label>
+        <label for="by_Category">Category:</label>
         <input type="text" id="by_Category" name="by_Category">
         <input type="submit" value="Search">
     </form>
+    {% if result is not none %}
+        {% if result %}
+            <h2>Search Result:</h2>
+            <table border="1">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Remain Quantity</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                </tr>
+                {% for row in result %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>${{ row[4] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    {% endif %}
 </body>
 </html>
