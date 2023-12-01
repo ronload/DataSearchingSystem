@@ -169,11 +169,7 @@ VALUES
 ('CII004', 'CI002', 'P004', 1);
 ```
 
-
-
-我的意思是這樣的：
-
-以下是我的`search_CustomerInfo.html`：
+以下是我的`search_ProductInfo.html`：
 
 ```html
 <!DOCTYPE html>
@@ -185,7 +181,7 @@ VALUES
 </head>
 <body>
     <h1>Search Customer Info</h1>
-    <form action="/search_customer" method="get">
+    <form action="/search_CustomerInfo" method="POST">
         <label for="by_CustomerID">Search by Customer ID:</label>
         <input type="text" id="by_CustomerID" name="by_CustomerID">
         <label for="by_CustomerName">Search by Customer Name:</label>
@@ -224,48 +220,13 @@ db_config = {
     "port": 3306
 }
 
-# 路由用來顯示資料
-@app.route("/show_data")
-def show_data():
-    try:
-        # 尝试连接到 MySQL 数据库
-        conn = mysql.connector.connect(**db_config)
-
-        # 创建一个游标对象
-        cursor = conn.cursor()
-
-        # 定义一个简单的 SQL 查询
-        sql_query = "SELECT * FROM CustomerInfo;"
-
-        # 执行 SQL 查询
-        cursor.execute(sql_query)
-
-        # 获取查询结果
-        result = cursor.fetchall()
-
-        # 关闭游标和连接
-        cursor.close()
-        conn.close()
-
-        return str(result)
-
-    except mysql.connector.Error as err:
-        # 处理连接错误
-        return f"Error: {err}"
-
-    finally:
-        # 最后确保关闭数据库连接
-        if conn.is_connected():
-            cursor.close()
-            conn.close()
-
 # Home page
 @app.route("/")
 def index():
     return render_template("index.html")
 
 # Search customer information
-@app.route("/search_customerInfo", methods=["GET", "POST"])
+@app.route("/search_CustomerInfo", methods=["GET", "POST"])
 def search_customer_info():
     if request.method == "POST":
         # customer attribute
@@ -276,25 +237,29 @@ def search_customer_info():
         email = request.form.get("by_EmailAddress")
 
         # query
+        connection = None
         try:
             # build database connection
-            connection = mysql.connector.connect("**db_config")
+            connection = mysql.connector.connect(**db_config)
             cursor = connection.cursor()
             conditions = []
             values = []
 
             # select conditions and values
+            if id:
+                conditions.append("CustomerID LIKE %s")
+                values.append(f"{id}")
             if name:
-                conditions.append("username LIKE %s")
+                conditions.append("CustomerName LIKE %s")
                 values.append(f"%{name}%")
             if phone_number:
-                conditions.append("phonenumber LIKE %s")
+                conditions.append("PhoneNumber LIKE %s")
                 values.append(f"%{phone_number}%")
             if address:
-                conditions.append("address LIKE %s")
+                conditions.append("Address LIKE %s")
                 values.append(f"%{address}%")
             if email:
-                conditions.append("email LIKE %s")
+                conditions.append("EmailAddress LIKE %s")
                 values.append(f"%{email}%")
             
             # build SQL query
@@ -310,15 +275,52 @@ def search_customer_info():
             return f"Error: {err}"
         
         finally:
-            if connection.is_connected():
+            if connection is not None and connection.is_connected():
                 connection.close()
                 cursor.close()
             
     return render_template("search_CustomerInfo.html")
 
 # Search product information
-@app.route("/search_ProductInfo")
+@app.route("/search_ProductInfo", methods=["GET", "POST"])
 def search_product_info():
+    if request.method == "POST":
+        # product attribute
+        id = request.form.get("by_ProductID")
+        name = request.form.get("by_ProductName")
+        category = request.form.get("by_Category")
+
+        # query
+        connection = None
+        try:
+            # connect database
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor()
+            conditions = []
+            values = []
+
+            # select conditions and values
+            if id:
+                conditions.append("ProductID LIKE %s")
+                values.append(f"%{id}%")
+            if name:
+                conditions.append("ProductName LIKE %s")
+                values.append(f"%{name}%")
+            if category:
+                conditions.append("Category LIKE %s")
+                values.append(f"%{category}%")
+
+            # build SQL query
+            query = "SELECT * FROM ProductInfo"
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+            cursor.execute(query, tuple(values))
+            result = cursor.fetchall()
+            cursor.close()
+            connection.close()
+            return str(result)
+        except mysql.connector.Error as err:
+            return f"Error: {err}"
     return render_template("search_ProductInfo.html")
 
 # Search order information
@@ -335,21 +337,7 @@ if __name__ == "__main__":
     app.run(debug=True)
 ```
 
-請協助我完成`search_customer_info()`函式，他的功能是讓使用者在前端輸入隨意資料，後端返回所有符合條件的使用者，例如：
+目前網頁在部署完成後都可以正常運行，我現在希望對網頁格式進行改進：
 
-使用者輸入`username`、`phonenumber`，後端返回所有`username`和`phonenumber`都符合的資料。
-
-
-
-波浪特性：
-
-| **波浪** | 计算方式                                                     |
-| -------- | ------------------------------------------------------------ |
-| 波浪1    | 第1个推动浪，主要用来计算其他不同波浪长度的标准。            |
-| 波浪2    | 范围通常在波浪1的38.2%和78.6%之间                            |
-| 波浪3    | 波浪3通常是最长的波浪，可能的情况是底下3个： ●波浪3 = 1.618 × 波浪1的长度 ●波浪3 = 2.62 × 波浪1的长度 ●波浪3 = 4.25 ×波浪1的长度 |
-| 波浪4    | 波浪4 = 波浪3的23.6%或是38.2%或是50%，23.6%、38.2%是比较常见的比例 |
-| 波浪5    | 如果波浪3大于或等于1.618或延长，那么波浪5可能的情况是底下3个： ●波浪5= 波浪1 ●波浪5= 1.618 × 波浪1 ●波浪5= 2.62 × 波浪1如果波浪3小于1.618时，第5浪往往会延伸，那么波浪5可能的情况是底下3个： ●波浪5 = 0.62 × 第1浪开始到第3浪顶部的长度 ●波浪5 =波浪1到波浪3的长度 ●波浪5 = 1.62 ×波浪1到波浪3的长度 |
-| 波浪A    | 第1个修正浪，主要用来计算其他不同波浪长度的标准。            |
-| 波浪B    | 波浪B通常会回档A浪的38.2%到78.6%。 如果波浪B在一个扩大的修正波中延伸到波浪A的起点之外，那么波浪B最常见的情况有2个： ●波浪B = 1.272 × 波浪A的长度 ●波浪B = 1.382 × 波浪A的长度 |
-| 波浪C    | 如果波浪C超出了波浪A的长度，那么波浪C的长度很可能是波浪A长度的1.382或1.618倍。 |
+1.   在顯示查詢結果時，會跳轉到一個新的分頁。我希望查詢結果直接顯示在原有網頁下方。
+2.   在顯示查詢結果時，會將結果直接以字串形式渲染在網頁上。我希望查詢結果可以以一個表格的形式呈現。

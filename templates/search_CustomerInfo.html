@@ -20,5 +20,30 @@
         <input type="text" id="by_EmailAddress" name="by_EmailAddress">
         <input type="submit" value="Search">
     </form>
+    {% if result is not none %}
+        {% if result %}
+            <h2>Search Result:</h2>
+            <table border="1">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Email Address</th>
+                </tr>
+                {% for row in result %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[4] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    {% endif %}
 </body>
 </html>

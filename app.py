@@ -25,6 +25,7 @@ def index():
 # Search customer information
 @app.route("/search_CustomerInfo", methods=["GET", "POST"])
 def search_customer_info():
+    result = None
     if request.method == "POST":
         # customer attribute
         id = request.form.get("by_CustomerID")
@@ -67,7 +68,7 @@ def search_customer_info():
             result = cursor.fetchall()
             cursor.close()
             connection.close()
-            return str(result)
+            return render_template("search_CustomerInfo.html", result=result)
         except mysql.connector.Error as err:
             return f"Error: {err}"
         
