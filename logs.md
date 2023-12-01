@@ -171,3 +171,170 @@ VALUES
 
 
 
+我的意思是這樣的：
+
+以下是我的`search_CustomerInfo.html`：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Customer Info</title>
+</head>
+<body>
+    <h1>Search Customer Info</h1>
+    <form action="/search_customer" method="get">
+        <label for="by_CustomerID">Search by Customer ID:</label>
+        <input type="text" id="by_CustomerID" name="by_CustomerID">
+        <label for="by_CustomerName">Search by Customer Name:</label>
+        <input type="text" id="by_CustomerName" name="by_CustomerName">
+        <label for="by_PhoneNumber">Search by Phone Number:</label>
+        <input type="text" id="by_PhoneNumber" name="by_PhoneNumber">
+        <label for="by_Address">Search by Address:</label>
+        <input type="text" id="by_Address" name="by_Address">
+        <label for="by_EmailAddress">Search by Email Address:</label>
+        <input type="text" id="by_EmailAddress" name="by_EmailAddress">
+        <input type="submit" value="Search">
+    </form>
+</body>
+</html>
+```
+
+以下是我的`app.py`：
+
+```python
+import mysql.connector
+from flask import Flask, render_template, request
+
+# Initialize Flask
+app = Flask(
+    __name__, 
+    static_folder="static", 
+    static_url_path="/static"
+)
+
+# Database setting
+db_config = {
+    "host": "uzb4o9e2oe257glt.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    "user": "byg9m4pbvaijmv33",
+    "password": "u6wbqkhe1bpbzz2j",
+    "database": "jw1i5zo4xwn6muaq",
+    "port": 3306
+}
+
+# 路由用來顯示資料
+@app.route("/show_data")
+def show_data():
+    try:
+        # 尝试连接到 MySQL 数据库
+        conn = mysql.connector.connect(**db_config)
+
+        # 创建一个游标对象
+        cursor = conn.cursor()
+
+        # 定义一个简单的 SQL 查询
+        sql_query = "SELECT * FROM CustomerInfo;"
+
+        # 执行 SQL 查询
+        cursor.execute(sql_query)
+
+        # 获取查询结果
+        result = cursor.fetchall()
+
+        # 关闭游标和连接
+        cursor.close()
+        conn.close()
+
+        return str(result)
+
+    except mysql.connector.Error as err:
+        # 处理连接错误
+        return f"Error: {err}"
+
+    finally:
+        # 最后确保关闭数据库连接
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+
+# Home page
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+# Search customer information
+@app.route("/search_customerInfo", methods=["GET", "POST"])
+def search_customer_info():
+    if request.method == "POST":
+        # customer attribute
+        id = request.form.get("by_CustomerID")
+        name = request.form.get("by_CustomerName")
+        phone_number = request.form.get("by_PhoneNumber")
+        address = request.form.get("by_Address")
+        email = request.form.get("by_EmailAddress")
+
+        # query
+        try:
+            # build database connection
+            connection = mysql.connector.connect("**db_config")
+            cursor = connection.cursor()
+            conditions = []
+            values = []
+
+            # select conditions and values
+            if name:
+                conditions.append("username LIKE %s")
+                values.append(f"%{name}%")
+            if phone_number:
+                conditions.append("phonenumber LIKE %s")
+                values.append(f"%{phone_number}%")
+            if address:
+                conditions.append("address LIKE %s")
+                values.append(f"%{address}%")
+            if email:
+                conditions.append("email LIKE %s")
+                values.append(f"%{email}%")
+            
+            # build SQL query
+            query = "SELECT * FROM CustomerInfo"
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+            cursor.execute(query, tuple(values))
+            result = cursor.fetchall()
+            cursor.close()
+            connection.close()
+            return str(result)
+        except mysql.connector.Error as err:
+            return f"Error: {err}"
+        
+        finally:
+            if connection.is_connected():
+                connection.close()
+                cursor.close()
+            
+    return render_template("search_CustomerInfo.html")
+
+# Search product information
+@app.route("/search_ProductInfo")
+def search_product_info():
+    return render_template("search_ProductInfo.html")
+
+# Search order information
+@app.route("/search_OrderInfo")
+def search_order_info():
+    return render_template("search_OrderInfo.html")
+
+# Search cart information
+@app.route("/search_CartInfo")
+def search_cart_info():
+    return render_template("search_CartInfo.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)
+```
+
+請協助我完成`search_customer_info()`函式，他的功能是讓使用者在前端輸入隨意資料，後端返回所有符合條件的使用者，例如：
+
+使用者輸入`username`、`phonenumber`，後端返回所有`username`和`phonenumber`都符合的資料。
