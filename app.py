@@ -10,10 +10,11 @@ app = Flask(
 
 # Database setting
 db_config = {
-    "host": "%",
-    "user": "ECommerceBackendUser",
-    "password": "ECommerceBackendUser",
-    "database": "ECommerceBackend"
+    "host": "uzb4o9e2oe257glt.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    "user": "byg9m4pbvaijmv33",
+    "password": "u6wbqkhe1bpbzz2j",
+    "database": "jw1i5zo4xwn6muaq",
+    "port": 3306
 }
 
 # 路由用來顯示資料
