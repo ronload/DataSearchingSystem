@@ -79,8 +79,45 @@ def search_customer_info():
     return render_template("search_CustomerInfo.html")
 
 # Search product information
-@app.route("/search_ProductInfo")
+@app.route("/search_ProductInfo", methods=["GET", "POST"])
 def search_product_info():
+    if request.method == "POST":
+        # product attribute
+        id = request.form.get("by_ProductID")
+        name = request.form.get("by_ProductName")
+        category = request.form.get("by_Category")
+
+        # query
+        connection = None
+        try:
+            # connect database
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor()
+            conditions = []
+            values = []
+
+            # select conditions and values
+            if id:
+                conditions.append("ProductID LIKE %s")
+                values.append(f"%{id}%")
+            if name:
+                conditions.append("ProductName LIKE %s")
+                values.append(f"%{name}%")
+            if category:
+                conditions.append("Category LIKE %s")
+                values.append(f"%{category}%")
+
+            # build SQL query
+            query = "SELECT * FROM ProductInfo"
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+            cursor.execute(query, tuple(values))
+            result = cursor.fetchall()
+            cursor.close()
+            connection.close()
+            return str(result)
+        except mysql.connector.Error as err:
+            return f"Error: {err}"
     return render_template("search_ProductInfo.html")
 
 # Search order information
