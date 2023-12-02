@@ -1,33 +1,4 @@
-這是我的資料庫查詢結果：
-
-```mysql
-mysql> SELECT 
-    ->     OrderInfo.OrderDate, 
-    ->     OrderInfo.OrderID, 
-    ->     CustomerInfo.CustomerName, 
-    ->     ProductInfo.ProductName, 
-    ->     OrderItem.ProductQuantity, 
-    ->     OrderInfo.PurchaseStatus
-    -> FROM 
-    ->     OrderInfo
-    -> JOIN 
-    ->     OrderItem ON OrderInfo.OrderID = OrderItem.OrderID
-    -> JOIN 
-    ->     ProductInfo ON OrderItem.ProductID = ProductInfo.ProductID
-    -> JOIN 
-    ->     CustomerInfo ON OrderInfo.CustomerID = CustomerInfo.CustomerID;
-+------------+---------+--------------+-------------+-----------------+----------------+
-| OrderDate  | OrderID | CustomerName | ProductName | ProductQuantity | PurchaseStatus |
-+------------+---------+--------------+-------------+-----------------+----------------+
-| 2023-01-15 | O001    | John Doe     | Smartphone  |               2 | Completed      |
-| 2023-02-20 | O002    | Jane Smith   | Laptop      |               1 | Shipped        |
-| 2023-01-15 | O001    | John Doe     | T-Shirt     |               5 | Completed      |
-| 2023-02-20 | O002    | Jane Smith   | Jeans       |               3 | Shipped        |
-+------------+---------+--------------+-------------+-----------------+----------------+
-4 rows in set (0.03 sec)
-```
-
-這是我的前端代碼`search_OrderInfo.html`：
+這是我的前端代碼`search_CartInfo.html`：
 
 ```html
 <!DOCTYPE html>
@@ -35,48 +6,34 @@ mysql> SELECT
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Order Info</title>
+    <title>Search Cart Info</title>
 </head>
 <body>
-    <h1>Search Order Info</h1>
-    <form action="/search_OrderInfo" method="POST">
-        <label for="by_OrderID">Order ID:</label>
-        <input type="text" id="by_OrderID" name="by_OrderID">
-        <label for="by_OrderDate">Order Date:</label>
-        <input type="text" id="by_OrderDate" name="by_OrderDate">
-        <!-- <label for="by_CustomerName">Customer Name:</label>
-        <input type="text" id="by_CustomerName" name="by_CustomerName"> -->
-        <label for="by_CustomerID">Customer ID:</label>
+    <h1>Search Cart Info</h1>
+    <form action="/search_CartInfo" method="POST">
+        <label for="by_CustomerID">Search by Customer ID:</label>
         <input type="text" id="by_CustomerID" name="by_CustomerID">
-        <label for="by_PurchaseStatus">Purchase Status</label>
-        <input type="text" id="by_PurchaseStatus" name="by_PurchaseStatus">
         <input type="submit" value="Search">
     </form>
-    {% if result is not none %}
-        {% if result %}
-            <h2>Search Result:</h2>
+    {% if result %}
+        <h2>Search Result:</h2>
             <table border="1">
                 <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Customer ID</th>
+                    <th>Customer Name</th>
                     <th>Total Price</th>
-                    <th>Purchase Status</th>
+                    <th>Products</th>
                 </tr>
                 {% for row in result %}
                     <tr>
                         <td>{{ row[0] }}</td>
-                        <td>{{ row[1] }}</td>
-                        <td>{{ row[2] }}</td>
-                        <td>${{ row[3] }}</td>
-                        <td>{{ row[4] }}</td>
+                        <td>${{ row[1] }}</td>
+                        <td>{{ row[2] | safe }}</td>
                     </tr>
                 {% endfor %}
             </table>
         {% else %}
             <p>No results found.</p>
         {% endif %}
-    {% endif %}
 </body>
 </html>
 ```
@@ -86,6 +43,7 @@ mysql> SELECT
 ```python
 import mysql.connector
 from flask import Flask, render_template, request
+from itertools import groupby
 
 # Initialize Flask
 app = Flask(
@@ -233,29 +191,55 @@ def search_order_info():
 
             # select conditions and values
             if order_id:
-                conditions.append("OrderID LIKE %s")
+                conditions.append("OrderInfo.OrderID LIKE %s")
                 values.append(f"%{order_id}%")
             if date:
                 conditions.append("OrderDate LIKE %s")
                 values.append(f"%{date}%")
             if customer_id:
-                conditions.append("CustomerID LIKE %s")
+                conditions.append("CustomerInfo.CustomerID LIKE %s")
                 values.append(f"%{customer_id}%")
             if purchase_status:
                 conditions.append("PurchaseStatus LIKE %s")
-                values.append(f"%{customer_id}%")
+                values.append(f"%{purchase_status}%")
 
             # build SQL query
-            query = """ 
-                SELECT OrderInfo.OrderID, OrderInfo.OrderDate, CustomerInfo.CustomerName,  
+            query = """
+                SELECT 
+                    OrderInfo.OrderID, 
+                    OrderInfo.OrderDate, 
+                    CustomerInfo.CustomerName, 
+                    OrderInfo.TotalOrderPrice,
+                    OrderInfo.PurchaseStatus,
+                    ProductInfo.ProductName,
+                    OrderItem.ProductQuantity
+                FROM 
+                    OrderInfo
+                JOIN 
+                    OrderItem ON OrderInfo.OrderID = OrderItem.OrderID
+                JOIN 
+                    ProductInfo ON OrderItem.ProductID = ProductInfo.ProductID
+                JOIN 
+                    CustomerInfo ON OrderInfo.CustomerID = CustomerInfo.CustomerID
             """
+
             if conditions:
                 query += " WHERE " + " AND ".join(conditions)
+            query += " GROUP BY OrderInfo.OrderID, ProductInfo.ProductID"
             cursor.execute(query, tuple(values))
             result = cursor.fetchall()
+
+            # merged searching result
+            merged_result = []
+            for key, group in groupby(result, key=lambda x: x[:5]):
+                order_info = key
+                products = [f"{row[5]} * {row[6]}" for row in group]
+                merged_products = '<br>'.join(products)
+                merged_result.append(order_info + (merged_products,))
+
             cursor.close()
             connection.close()
-            return render_template("search_OrderInfo.html", result=result)
+            return render_template("search_OrderInfo.html", result=merged_result)
 
         except mysql.connector.Error as err:
             return f"Error: {err}"
@@ -266,9 +250,66 @@ def search_order_info():
 
     return render_template("search_OrderInfo.html")
 
+
 # Search cart information
-@app.route("/search_CartInfo")
+@app.route("/search_CartInfo", methods=["GET", "POST"])
 def search_cart_info():
+    result = None
+    if request.method == "POST":
+        # cart attribute
+        id = request.form.get("by_CustomerID")
+        
+        # query
+        try:
+            # build connection
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor()
+            conditions = []
+            values = []
+
+            # select condition and value
+            if id:
+                conditions.append("CustomerInfo.CustomerID LIKE %s")
+                values.append(f"%{id}%")
+            
+            # build sql query
+            query = """
+                SELECT 
+                    CustomerInfo.CustomerName, 
+                    CartInfo.TotalCartPrice,
+                    ProductInfo.ProductName,
+                    CartItem.ProductQuantity
+                FROM 
+                    CartInfo
+                JOIN 
+                    CartItem ON CartInfo.CartID = CartItem.CartID
+                JOIN 
+                    ProductInfo ON CartItem.ProductID = ProductInfo.ProductID
+                JOIN 
+                    CustomerInfo ON CartInfo.CustomerID = CustomerInfo.CustomerID
+            """
+
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+            query +=  " GROUP BY CartInfo.CartID, ProductInfo.ProductID"
+            cursor.execute(query, tuple(values))
+            result = cursor.fetchall()
+            
+            # merged searching result
+            merged_result = []
+            for key, group in groupby(result, key=lambda x: x[:3]):
+                cart_info = key
+                products = [f"{row[2]} * {row[3]}" for row in group]
+                merged_products = '<br>'.join(products)
+                merged_result.append(cart_info + (merged_products,))
+
+            cursor.close()
+            connection.close()
+
+            return render_template("search_CartInfo.html", result=merged_result)
+
+        except mysql.connector.Error as err:
+            return f"Err: {err}"
     return render_template("search_CartInfo.html")
 
 if __name__ == "__main__":

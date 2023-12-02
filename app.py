@@ -209,8 +209,67 @@ def search_order_info():
 
 
 # Search cart information
-@app.route("/search_CartInfo")
+@app.route("/search_CartInfo", methods=["GET", "POST"])
 def search_cart_info():
+    result = None
+    if request.method == "POST":
+        # cart attribute
+        id = request.form.get("by_CustomerID")
+        
+        # query
+        try:
+            # build connection
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor()
+            conditions = []
+            values = []
+
+            # select condition and value
+            if id:
+                conditions.append("CustomerInfo.CustomerID LIKE %s")
+                values.append(f"%{id}%")
+            
+            # build sql query
+            query = """
+                SELECT 
+                    CustomerInfo.CustomerName, 
+                    CartInfo.TotalCartPrice,
+                    ProductInfo.ProductName,
+                    CartItem.ProductQuantity
+                FROM 
+                    CartInfo
+                JOIN 
+                    CartItem ON CartInfo.CartID = CartItem.CartID
+                JOIN 
+                    ProductInfo ON CartItem.ProductID = ProductInfo.ProductID
+                JOIN 
+                    CustomerInfo ON CartInfo.CustomerID = CustomerInfo.CustomerID
+            """
+
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+            query +=  " GROUP BY CartInfo.CartID, ProductInfo.ProductID"
+            cursor.execute(query, tuple(values))
+            result = cursor.fetchall()
+            
+            # merged searching result
+            merged_result = []
+            for key, group in groupby(result, key=lambda x: x[:2]):
+                cart_info = key
+                products = [f"{row[2]} * {row[3]}" for row in group]
+                merged_products = '<br>'.join(products)
+                merged_result.append(cart_info + (merged_products,))
+            cursor.close()
+            connection.close()
+
+            return render_template("search_CartInfo.html", result=merged_result)
+
+        except mysql.connector.Error as err:
+            return f"Err: {err}"
+        
+        finally:
+            connection.close()
+            cursor.close()
     return render_template("search_CartInfo.html")
 
 if __name__ == "__main__":

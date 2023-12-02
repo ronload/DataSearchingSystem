@@ -7,10 +7,29 @@
 </head>
 <body>
     <h1>Search Cart Info</h1>
-    <form action="/search_cart" method="get">
+    <form action="/search_CartInfo" method="POST">
         <label for="by_CustomerID">Search by Customer ID:</label>
         <input type="text" id="by_CustomerID" name="by_CustomerID">
         <input type="submit" value="Search">
     </form>
+    {% if result %}
+        <h2>Search Result:</h2>
+            <table border="1">
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Total Price</th>
+                    <th>Products</th>
+                </tr>
+                {% for row in result %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>${{ row[1] }}</td>
+                        <td>{{ row[2] | safe }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
 </body>
 </html>
