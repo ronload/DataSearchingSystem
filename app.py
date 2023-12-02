@@ -1,5 +1,5 @@
 import mysql.connector
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from itertools import groupby
 
 # Initialize Flask
@@ -26,7 +26,14 @@ def index():
 # Search customer information
 @app.route("/search_CustomerInfo", methods=["GET", "POST"])
 def search_customer_info():
-    result = None
+    result = []
+    if request.method == "GET":
+        return render_template(
+            "search_CustomerInfo.html", 
+            result=result, 
+            show_no_result=False
+        )
+
     if request.method == "POST":
         # customer attribute
         id = request.form.get("by_CustomerID")
@@ -69,7 +76,11 @@ def search_customer_info():
             result = cursor.fetchall()
             cursor.close()
             connection.close()
-            return render_template("search_CustomerInfo.html", result=result)
+            return render_template(
+                "search_CustomerInfo.html", 
+                result=result, 
+                show_no_result=(len(result) == 0)
+            )
         except mysql.connector.Error as err:
             return f"Error: {err}"
         
@@ -78,11 +89,14 @@ def search_customer_info():
                 connection.close()
                 cursor.close()
             
-    return render_template("search_CustomerInfo.html")
+    return render_template("search_CustomerInfo.html", result=result)
 
 # Search product information
 @app.route("/search_ProductInfo", methods=["GET", "POST"])
 def search_product_info():
+    result = []
+    if request.method == "GET":
+        return render_template("search_ProductInfo.html", result=result, show_no_result=False)
     if request.method == "POST":
         # product attribute
         id = request.form.get("by_ProductID")
@@ -117,7 +131,11 @@ def search_product_info():
             result = cursor.fetchall()
             cursor.close()
             connection.close()
-            return render_template("search_ProductInfo.html", result=result)
+            return render_template(
+                "search_ProductInfo.html", 
+                result=result, 
+                show_no_result=(len(result) == 0)
+            )
         except mysql.connector.Error as err:
             return f"Error: {err}"
 
@@ -130,7 +148,13 @@ def search_product_info():
 # Search order information
 @app.route("/search_OrderInfo", methods=["GET", "POST"])
 def search_order_info():
-    result = None
+    result = []
+    if request.method == "GET":
+        return render_template(
+            "search_OrderInfo.html", 
+            result=result,
+            show_no_result=False
+        )
     if request.method == "POST":
         # order attribute
         order_id = request.form.get("by_OrderID")
@@ -196,7 +220,11 @@ def search_order_info():
 
             cursor.close()
             connection.close()
-            return render_template("search_OrderInfo.html", result=merged_result)
+            return render_template(
+                "search_OrderInfo.html", 
+                result=merged_result,
+                show_no_result=(len(merged_result) == 0)
+            )
 
         except mysql.connector.Error as err:
             return f"Error: {err}"
@@ -211,7 +239,13 @@ def search_order_info():
 # Search cart information
 @app.route("/search_CartInfo", methods=["GET", "POST"])
 def search_cart_info():
-    result = None
+    result = []
+    if request.method == "GET":
+        return render_template(
+            "search_CartInfo.html",
+            result=result,
+            show_no_result=False
+        )
     if request.method == "POST":
         # cart attribute
         id = request.form.get("by_CustomerID")
@@ -262,7 +296,11 @@ def search_cart_info():
             cursor.close()
             connection.close()
 
-            return render_template("search_CartInfo.html", result=merged_result)
+            return render_template(
+                "search_CartInfo.html", 
+                result=merged_result,
+                show_no_result=(len(merged_result) == 0)
+            )
 
         except mysql.connector.Error as err:
             return f"Err: {err}"

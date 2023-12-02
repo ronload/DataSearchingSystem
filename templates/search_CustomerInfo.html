@@ -20,7 +20,10 @@
         <input type="text" id="by_EmailAddress" name="by_EmailAddress">
         <input type="submit" value="Search">
     </form>
-    {% if result is not none %}
+    {% if show_no_result %}
+        <p>No results found.</p>
+    {% endif %}
+    {% if result %}
         {% if result %}
             <h2>Search Result:</h2>
             <table border="1">
@@ -41,8 +44,6 @@
                     </tr>
                 {% endfor %}
             </table>
-        {% else %}
-            <p>No results found.</p>
         {% endif %}
     {% endif %}
 </body>

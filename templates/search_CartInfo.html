@@ -12,6 +12,9 @@
         <input type="text" id="by_CustomerID" name="by_CustomerID">
         <input type="submit" value="Search">
     </form>
+    {% if show_no_result %}
+        <p>No results found.</p>
+    {% endif %}
     {% if result %}
         <h2>Search Result:</h2>
             <table border="1">
@@ -28,8 +31,6 @@
                     </tr>
                 {% endfor %}
             </table>
-        {% else %}
-            <p>No results found.</p>
         {% endif %}
 </body>
 </html>
