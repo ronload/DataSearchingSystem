@@ -13,7 +13,7 @@ app = Flask(
 db_config = {
     "host": "uzb4o9e2oe257glt.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
     "user": "byg9m4pbvaijmv33",
-    "password": "u6wbqkhe1bpbzz2j",
+    "password": "f5ug9tcx85x325uu",
     "database": "jw1i5zo4xwn6muaq",
     "port": 3306
 }
