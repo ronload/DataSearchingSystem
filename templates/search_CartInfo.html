@@ -3,34 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/css/search_CartInfo.css">
     <title>Search Cart Info</title>
 </head>
-<body>
-    <h1>Search Cart Info</h1>
-    <form action="/search_CartInfo" method="POST">
-        <label for="by_CustomerID">Search by Customer ID:</label>
-        <input type="text" id="by_CustomerID" name="by_CustomerID">
-        <input type="submit" value="Search">
-    </form>
-    {% if show_no_result %}
-        <p>No results found.</p>
-    {% endif %}
-    {% if result %}
-        <h2>Search Result:</h2>
-            <table border="1">
-                <tr>
-                    <th>Customer Name</th>
-                    <th>Total Price</th>
-                    <th>Products</th>
-                </tr>
-                {% for row in result %}
-                    <tr>
-                        <td>{{ row[0] }}</td>
-                        <td>${{ row[1] }}</td>
-                        <td>{{ row[2] | safe }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
+<body class="wrap">
+    <section class="head">
+        <div>E COMMERCE BACKEND</div>
+    </section>
+    <section class="content">
+        <aside>
+            <a href="/" class="search_button">HOME</a>
+            <a href="search_CustomerInfo" class="search_button">CUSTOMER</a>
+            <a href="search_ProductInfo" class="search_button">PRODUCT</a>
+            <a href="search_OrderInfo" class="search_button">ORDER</a>
+            <a href="search_CartInfo" class="search_button">CART</a>
+        </aside> 
+        <div class="main">
+            <form action="/search_CartInfo" method="POST">
+                <label for="by_CustomerID">Search by Customer ID:</label>
+                <input type="text" id="by_CustomerID" name="by_CustomerID">
+                <input type="submit" value="Search">
+            </form>
+            {% if show_no_result %}
+                <p>No results found.</p>
+            {% endif %}
+            {% if result %}
+                <h2>Search Result:</h2>
+                    <table border="1">
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Total Price</th>
+                            <th>Products</th>
+                        </tr>
+                        {% for row in result %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>${{ row[1] }}</td>
+                                <td>{{ row[2] | safe }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+    </section>
 </body>
 </html>

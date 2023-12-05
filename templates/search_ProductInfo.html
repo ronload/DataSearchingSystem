@@ -3,42 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Product Info</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/search_CartInfo.css">
+    <title>Search Customer Info</title>
 </head>
-<body>
-    <h1>Search Product Info</h1>
-    <form action="/search_ProductInfo" method="POST">
-        <label for="by_ProductID">Product ID:</label>
-        <input type="text" id="by_ProductID" name="by_ProductID">
-        <label for="by_ProductName">Product Name:</label>
-        <input type="text" id="by_ProductName" name="by_ProductName">
-        <label for="by_Category">Category:</label>
-        <input type="text" id="by_Category" name="by_Category">
-        <input type="submit" value="Search">
-    </form>
-    {% if show_no_result %}
-        <p>No results found.</p>
-    {% endif %}
-    {% if result %}
-        <h2>Search Result:</h2>
-        <table border="1">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Remain Quantity</th>
-                <th>Category</th>
-                <th>Price</th>
-            </tr>
-            {% for row in result %}
-                <tr>
-                    <td>{{ row[0] }}</td>
-                    <td>{{ row[1] }}</td>
-                    <td>{{ row[3] }}</td>
-                    <td>{{ row[2] }}</td>
-                    <td>${{ row[4] }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+<body class="wrap">
+    <section class="head">
+        <div>E COMMERCE BACKEND</div>
+    </section>
+    <section class="content">
+        <aside>
+            <a href="/" class="search_button">HOME</a>
+            <a href="search_CustomerInfo" class="search_button">CUSTOMER</a>
+            <a href="search_ProductInfo" class="search_button">PRODUCT</a>
+            <a href="search_OrderInfo" class="search_button">ORDER</a>
+            <a href="search_CartInfo" class="search_button">CART</a>
+        </aside>
+        <div class="main">
+            <form action="/search_ProductInfo" method="POST">
+                <label for="by_ProductID">Product ID:</label>
+                <input type="text" id="by_ProductID" name="by_ProductID">
+                <label for="by_ProductName">Product Name:</label>
+                <input type="text" id="by_ProductName" name="by_ProductName">
+                <label for="by_Category">Category:</label>
+                <input type="text" id="by_Category" name="by_Category">
+                <input type="submit" value="Search">
+            </form>
+            {% if show_no_result %}
+                <p>No results found.</p>
+            {% endif %}
+            {% if result %}
+                <h2>Search Result:</h2>
+                <table border="1">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Remain Quantity</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                    </tr>
+                    {% for row in result %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                            <td>{{ row[3] }}</td>
+                            <td>{{ row[2] }}</td>
+                            <td>${{ row[4] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+    </section>
 </body>
 </html>
