@@ -124,13 +124,18 @@ desc ProductInfo;
 INSERT INTO CustomerInfo (CustomerId, CustomerName, Address, PhoneNumber, EmailAddress)
 VALUES 
 ('C001', 'John Doe', '123 Main St, Cityville', '1234567890', 'john.doe@email.com'),
-('C002', 'Jane Smith', '456 Oak St, Townsville', '9876543210', 'jane.smith@email.com');
+('C002', 'Jane Smith', '456 Oak St, Townsville', '9876543210', 'jane.smith@email.com'),
+('C003', 'Robert Johnson', '789 Pine St, Villageton', '1122334455', 'robert.johnson@email.com'),
+('C004', 'Emily White', '101 Elm St, Hillside', '5544332211', 'emily.white@email.com'),
+('C005', 'Michael Brown', '246 Oak St, Countryside', '9988776655', 'michael.brown@email.com');
 
 -- 插入 Category 測試資料
 INSERT INTO Category (CategoryId, CategoryName)
 VALUES 
 ('Cat001', 'Electronics'),
-('Cat002', 'Clothing');
+('Cat002', 'Clothing'),
+('Cat003', 'Books'),
+('Cat004', 'Home and Garden');
 
 -- 插入 ProductInfo 測試資料
 INSERT INTO ProductInfo (ProductId, ProductName, CategoryId, ProductRemainQuantity, ProductPrice)
@@ -138,13 +143,32 @@ VALUES
 ('P001', 'Smartphone', 'Cat001', 50, 499.99),
 ('P002', 'Laptop', 'Cat001', 30, 999.99),
 ('P003', 'T-Shirt', 'Cat002', 100, 19.99),
-('P004', 'Jeans', 'Cat002', 80, 39.99);
+('P004', 'Jeans', 'Cat002', 80, 39.99),
+('P005', 'Book - The Art of Programming', 'Cat003', 50, 29.99),
+('P006', 'Garden Tools Set', 'Cat004', 20, 69.99),
+('P007', 'Dress Shirt', 'Cat002', 75, 29.99),
+('P008', 'Casual Shoes', 'Cat002', 40, 49.99),
+('P009', 'Wireless Earbuds', 'Cat001', 25, 79.99),
+('P010', 'Fitness Tracker', 'Cat001', 40, 49.99),
+('P011', 'Graphic T-Shirt', 'Cat002', 60, 24.99),
+('P012', 'Denim Jacket', 'Cat002', 35, 59.99),
+('P013', 'Laptop Bag', 'Cat001', 15, 39.99),
+('P014', 'Gardening Gloves', 'Cat004', 50, 14.99),
+('P015', 'Cookbook - Healthy Recipes', 'Cat003', 30, 34.99),
+('P016', 'Running Shoes', 'Cat002', 20, 69.99),
+('P017', 'Smart Home Kit', 'Cat001', 10, 149.99);
 
 -- 插入 OrderInfo 測試資料
 INSERT INTO OrderInfo (OrderId, OrderDate, CustomerId, TotalOrderPrice, PurchaseStatus)
 VALUES 
 ('O001', '2023-01-15', 'C001', 1499.97, 'Completed'),
-('O002', '2023-02-20', 'C002', 239.97, 'Shipped');
+('O002', '2023-02-20', 'C002', 239.97, 'Shipped'),
+('O003', '2023-03-25', 'C003', 129.98, 'Processing'),
+('O004', '2023-04-05', 'C004', 699.96, 'Completed'),
+('O005', '2023-05-10', 'C001', 99.99, 'Shipped'),
+('O006', '2023-06-15', 'C002', 399.95, 'Processing'),
+('O007', '2023-07-20', 'C003', 249.99, 'Completed');
+
 
 -- 插入 OrderItem 測試資料
 INSERT INTO OrderItem (OrderItemId, OrderId, ProductId, ProductQuantity)
@@ -152,13 +176,26 @@ VALUES
 ('OI001', 'O001', 'P001', 2),
 ('OI002', 'O001', 'P003', 5),
 ('OI003', 'O002', 'P002', 1),
-('OI004', 'O002', 'P004', 3);
+('OI004', 'O002', 'P004', 3),
+('OI005', 'O003', 'P005', 2),
+('OI006', 'O003', 'P006', 1),
+('OI007', 'O004', 'P007', 3),
+('OI008', 'O004', 'P008', 2),
+('OI009', 'O005', 'P001', 1),
+('OI010', 'O005', 'P002', 2),
+('OI011', 'O006', 'P003', 3),
+('OI012', 'O007', 'P004', 1);
 
 -- 插入 CartInfo 測試資料
 INSERT INTO CartInfo (CartId, CustomerId, TotalCartPrice)
 VALUES 
 ('CI001', 'C001', 599.98),
-('CI002', 'C002', 79.98);
+('CI002', 'C002', 79.98),
+('CI003', 'C003', 129.98),
+('CI004', 'C004', 199.98),
+('CI005', 'C001', 159.96),
+('CI006', 'C002', 89.97),
+('CI007', 'C003', 299.98);
 
 -- 插入 CartItem 測試資料
 INSERT INTO CartItem (CartItemId, CartId, ProductId, ProductQuantity)
@@ -166,7 +203,15 @@ VALUES
 ('CII001', 'CI001', 'P001', 1),
 ('CII002', 'CI001', 'P003', 3),
 ('CII003', 'CI002', 'P002', 2),
-('CII004', 'CI002', 'P004', 1);
+('CII004', 'CI002', 'P004', 1),
+('CII005', 'CI003', 'P005', 1),
+('CII006', 'CI003', 'P006', 2),
+('CII007', 'CI004', 'P007', 1),
+('CII008', 'CI004', 'P008', 3);
+('CII009', 'CI005', 'P003', 2),
+('CII010', 'CI005', 'P004', 1),
+('CII011', 'CI006', 'P001', 3),
+('CII012', 'CI007', 'P002', 2);
 ```
 
 以下是我的`search_ProductInfo.html`：

@@ -1,0 +1,58 @@
+/* 
+background color: #fafafa 
+float block color: #ffffff
+*/
+@charset "utf-8";
+html {
+    background-color: #fafafa;
+    height: 100%;
+}
+
+.head {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4em;
+    border-bottom: 0.5px solid #ccc;
+}
+
+body {
+	font-family: "Roboto", Helvetica, sans-serif;
+	font-size: 1.25em;
+	font-weight: 100;
+	line-height: 1.75em;
+    align-items: center;
+    margin: 0%;
+    height: 100%;
+}
+
+.wrap {
+    min-height: -0.1%;
+    margin-bottom: -0.1%;
+    height: 100%;
+}
+.side-bar {
+    height: 100%;
+}
+
+aside {
+    display: block;
+    background-color: #ffffff;
+    width: 8em;
+    height: 100%;
+    border-right: 0.5px solid #ccc;
+}
+
+.search_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: medium;
+    text-decoration: none;
+    color: #000000;
+}
+
+.search_button:visited {
+    color: #000000;
+}

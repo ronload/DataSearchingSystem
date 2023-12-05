@@ -1,5 +1,5 @@
 import mysql.connector
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from itertools import groupby
 
 # Initialize Flask
