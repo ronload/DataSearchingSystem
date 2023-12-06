@@ -9,6 +9,7 @@ html {
 }
 
 .head {
+    font-size: 1.25em;
     background-color: #ffffff;
     display: flex;
     justify-content: center;
@@ -19,7 +20,6 @@ html {
 
 body {
 	font-family: "Roboto", Helvetica, sans-serif;
-	font-size: 1.25em;
 	font-weight: 100;
 	line-height: 1.75em;
     align-items: center;
@@ -50,7 +50,7 @@ aside {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: medium;
+    font-size: 1.25em larger;
     text-decoration: none;
     color: #000000;
 }
