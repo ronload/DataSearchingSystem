@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../static/css/index.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
+    <script src="../static/javascript/index.js"></script>
     <title>E Commerce Backend</title>
 </head>
 <body class="wrap">
@@ -19,7 +20,21 @@
             <a href="search_OrderInfo" class="search_button">ORDER</a>
             <a href="search_CartInfo" class="search_button">CART</a>
         </aside> 
-        <div class="main"></div>
+        <div class="main">
+            <div class="banner">
+                <div class="dashboard" id="month-order">
+                    <div class="chart" id="month-order-chart"></div>
+                </div>
+                <div class="dashboard" id="category-sale">
+                    <div class="chart" id="category-sale-chart"></div>
+                </div>
+            </div>
+            <div class="banner">
+                <div class="dashboard" id="month-sale">
+                    <div class="chart" id="month-sale-chart"></div>
+                </div>
+            </div>
+        </div>
     </section>
 </body>
 </html>

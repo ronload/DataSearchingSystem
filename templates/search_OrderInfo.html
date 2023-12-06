@@ -19,43 +19,54 @@
             <a href="search_CartInfo" class="search_button">CART</a>
         </aside>
         <div class="main">
-            <form action="/search_OrderInfo" method="POST">
-                <label for="by_OrderID">Order ID:</label>
-                <input type="text" id="by_OrderID" name="by_OrderID">
-                <label for="by_OrderDate">Order Date:</label>
-                <input type="text" id="by_OrderDate" name="by_OrderDate">
-                <label for="by_CustomerID">Customer ID:</label>
-                <input type="text" id="by_CustomerID" name="by_CustomerID">
-                <label for="by_PurchaseStatus">Purchase Status</label>
-                <input type="text" id="by_PurchaseStatus" name="by_PurchaseStatus">
-                <input type="submit" value="Search">
+            <form action="/search_OrderInfo" method="POST" class="search">
+                <div class="condition">
+                    <div class="input-item">
+                        <label for="by_OrderID">Order ID:</label>
+                        <input type="text" id="by_OrderID" name="by_OrderID" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_OrderDate">Order Date:</label>
+                        <input type="text" id="by_OrderDate" name="by_OrderDate" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_CustomerID">Customer ID:</label>
+                        <input type="text" id="by_CustomerID" name="by_CustomerID" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_PurchaseStatus">Purchase Status</label>
+                        <input type="text" id="by_PurchaseStatus" name="by_PurchaseStatus" autocomplete="off">
+                    </div>
+                </div>
+                <input type="submit" value="Search" class="submit">
             </form>
-            {% if show_no_result %}
-                <p>No results found.</p>
-            {% endif %}
-            {% if result %}
-                <h2>Search Result:</h2>
-                <table border="1">
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Date</th>
-                        <th>Customer Name</th>
-                        <th>Total Price</th>
-                        <th>Purchase Status</th>
-                        <th>Products</th>
-                    </tr>
-                    {% for row in result %}
+            <div class="result">
+                {% if show_no_result %}
+                    <p>No results found.</p>
+                {% endif %}
+                {% if result %}
+                    <table>
                         <tr>
-                            <td>{{ row[0] }}</td>
-                            <td>{{ row[1] }}</td>
-                            <td>{{ row[2] }}</td>
-                            <td>${{ row[3] }}</td>
-                            <td>{{ row[4] }}</td>
-                            <td>{{ row[5] | safe}}</td>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer Name</th>
+                            <th>Total Price</th>
+                            <th>Purchase Status</th>
+                            <th>Products</th>
                         </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
+                        {% for row in result %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>${{ row[3] }}</td>
+                                <td>{{ row[4] }}</td>
+                                <td>{{ row[5] | safe}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
         </div>
     </section>
 </body>

@@ -44,32 +44,33 @@
                 </div>
                 <input type="submit" value="Search" class="submit">
             </form>
-            {% if show_no_result %}
-                <p>No results found.</p>
-            {% endif %}
-            {% if result %}
-                {% if result %}
-                    <h2>Search Result:</h2>
-                    <table border="1">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Phone Number</th>
-                            <th>Address</th>
-                            <th>Email Address</th>
-                        </tr>
-                        {% for row in result %}
-                            <tr>
-                                <td>{{ row[0] }}</td>
-                                <td>{{ row[1] }}</td>
-                                <td>{{ row[3] }}</td>
-                                <td>{{ row[2] }}</td>
-                                <td>{{ row[4] }}</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+            <div class="result">
+                {% if show_no_result %}
+                    <p>No results found.</p>
                 {% endif %}
-            {% endif %}
+                {% if result %}
+                    {% if result %}
+                        <table>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Address</th>
+                                <th>Email Address</th>
+                            </tr>
+                            {% for row in result %}
+                                <tr>
+                                    <td>{{ row[0] }}</td>
+                                    <td>{{ row[1] }}</td>
+                                    <td>{{ row[3] }}</td>
+                                    <td>{{ row[2] }}</td>
+                                    <td>{{ row[4] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
     </section>
 </body>

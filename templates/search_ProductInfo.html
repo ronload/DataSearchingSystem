@@ -19,39 +19,48 @@
             <a href="search_CartInfo" class="search_button">CART</a>
         </aside>
         <div class="main">
-            <form action="/search_ProductInfo" method="POST">
-                <label for="by_ProductID">Product ID:</label>
-                <input type="text" id="by_ProductID" name="by_ProductID">
-                <label for="by_ProductName">Product Name:</label>
-                <input type="text" id="by_ProductName" name="by_ProductName">
-                <label for="by_Category">Category:</label>
-                <input type="text" id="by_Category" name="by_Category">
-                <input type="submit" value="Search">
+            <form action="/search_ProductInfo" method="POST" class="search">
+                <div class="condition">
+                    <div class="input-item">
+                        <label for="by_ProductID">Product ID:</label><br>
+                        <input type="text" id="by_ProductID" name="by_ProductID" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_ProductName">Product Name:</label><br>
+                        <input type="text" id="by_ProductName" name="by_ProductName" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_Category">Category:</label><br>
+                        <input type="text" id="by_Category" name="by_Category" autocomplete="off">
+                    </div>
+                </div>
+                <input type="submit" value="Search" class="submit">
             </form>
-            {% if show_no_result %}
-                <p>No results found.</p>
-            {% endif %}
-            {% if result %}
-                <h2>Search Result:</h2>
-                <table border="1">
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Remain Quantity</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                    </tr>
-                    {% for row in result %}
+            <div class="result">
+                {% if show_no_result %}
+                    <p>No results found.</p>
+                {% endif %}
+                {% if result %}
+                    <table>
                         <tr>
-                            <td>{{ row[0] }}</td>
-                            <td>{{ row[1] }}</td>
-                            <td>{{ row[3] }}</td>
-                            <td>{{ row[2] }}</td>
-                            <td>${{ row[4] }}</td>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Remain Quantity</th>
+                            <th>Category</th>
+                            <th>Price</th>
                         </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
+                        {% for row in result %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[3] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>${{ row[4] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
         </div>
     </section>
 </body>

@@ -27,7 +27,6 @@ body {
 }
 
 .wrap {
-    margin-bottom: -0.1%;
     height: 100%;
 }
 
@@ -69,4 +68,39 @@ aside {
     width: 100%;
     height: 100%;
     display: block;
+}
+
+.banner {
+    display: flex;
+    width: 100%;
+    height: 44%;
+}
+
+.dashboard {
+    text-align: center;
+    background-color: #ffffff;
+    border: 0.5px solid #ccc;
+    border-radius: 3px;
+    margin: 1em;
+    margin-bottom: 0%;
+    padding: 1.5em;
+}
+
+#month-order {
+    width: 50%;
+    margin-right: 0.5em;
+}
+
+#category-sale {
+    width: 50%;
+    margin-left: 0.5em;
+}
+
+#month-sale {
+    width: 100%;
+}
+
+.chart {
+    width: 100%;
+    height: 100%;
 }
