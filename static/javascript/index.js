@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => { renderPieChart(
             containerID="category-sale-chart",
-            title="CATEGORY", 
+            title="CATEGORY SALES", 
             renderData=data
         );
     })
@@ -48,6 +48,19 @@ function renderLineChart(containerID, title, xName, renderData) {
         series: [
             {
                 data: renderData,
+                symbol: 'none',
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgba(58,77,233,0.8)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgba(58,77,233,0.3)'
+                        }
+                    ])
+                },
                 type: 'line'
             }
         ]
@@ -57,6 +70,15 @@ function renderLineChart(containerID, title, xName, renderData) {
 
 function renderPieChart(containerID, title, renderData) {
     var chart = echarts.init(document.getElementById(containerID))
+    var blueGradient = [
+        'rgba(42, 54, 181, 0.8)', 'rgba(63, 85, 239, 0.8)', 'rgba(78, 106, 254, 0.8)',
+        'rgba(92, 117, 255, 0.8)', 'rgba(106, 129, 255, 0.8)', 'rgba(121, 140, 255, 0.8)',
+        'rgba(135, 152, 255, 0.8)', 'rgba(149, 164, 255, 0.8)', 'rgba(164, 175, 255, 0.8)',
+        'rgba(178, 187, 255, 0.8)', 'rgba(192, 198, 255, 0.8)', 'rgba(207, 210, 255, 0.8)',
+        'rgba(221, 222, 255, 0.8)', 'rgba(235, 234, 255, 0.8)', 'rgba(249, 245, 255, 0.8)'
+    ];
+    
+
     option = {
         title: {
             text: title,
@@ -65,23 +87,20 @@ function renderPieChart(containerID, title, renderData) {
         tooltip: {
             trigger: 'item'
         },
-        legend: {
-            orient: 'vertical',
-            left: 'left'
-        },
         series: [{
             name: 'Access From',
             type: 'pie',
-            radius: '50%',
+            radius: '60%',
             data: renderData,
-            emphasis: {
-                itemStyle: {
+            itemStyle: {
+                emphasis: {
                     shadowBlur: 10,
                     shadowOffsetX: 0,
                     shadowColor: 'rgba(0, 0, 0, 0.5)'
                 }
-            }
+            },
+            color: blueGradient,
         }]
     };
-    chart.setOption(option)
+    chart.setOption(option);
 }
