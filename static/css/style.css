@@ -136,8 +136,7 @@ aside {
     margin: 1em;
     margin-top: 2em;
     padding: 1.5em;
-    opacity: 0;
-    animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .result table {
@@ -150,3 +149,4 @@ aside {
     border: 0.5px solid #ccc;
     border-radius: 3px;
 }
+
