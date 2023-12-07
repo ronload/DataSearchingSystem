@@ -2,44 +2,37 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("/get_month_order_data")
         .then(response => response.json())
         .then(data => { renderLineChart(
-            "month-order-chart",
-            "month-order-chart", 
-            data.xName,
-            data.renderData
+            containerID="month-order-chart",
+            title="ORDERS IN THE PAST 30 DAYS", 
+            xName=data.xName,
+            renderData=data.renderData
+        );
+    })
+    .catch(error => console.error("Error fetching data:", error));
+    fetch("/get_category_sale_data")
+        .then(response => response.json())
+        .then(data => { renderPieChart(
+            containerID="category-sale-chart",
+            title="CATEGORY", 
+            renderData=data
         );
     })
     .catch(error => console.error("Error fetching data:", error));
 
-    // renderPieChart(
-    //     containerID = "category-sale-chart",
-    //     title = "category",
-    //     renderData = [
-    //         { value: 1048, name: 'Search Engine' },
-    //         { value: 735, name: 'Direct' },
-    //         { value: 580, name: 'Email' },
-    //         { value: 484, name: 'Union Ads' },
-    //         { value: 300, name: 'Video Ads' }
-    //     ]
-    // )
     fetch("/get_month_sale_data")
         .then(response => response.json())
         .then(data => { renderLineChart(
-            "month-sale-chart",
-            "month-sale-chart", 
-            data.xName,
-            data.renderData
+            containerID="month-sale-chart",
+            title="SALES IN THE PAST 30 DAYS", 
+            xName=data.xName,
+            renderData=data.renderData
         );
     })
     .catch(error => console.error("Error fetching data:", error));
 });
 
 function renderLineChart(containerID, title, xName, renderData) {
-    console.log("containerID:", containerID);
-    console.log("title:", title);
-    console.log("xName:", xName);
-    console.log("renderData:", renderData);
-    var element = document.getElementById(containerID)
-    var chart = echarts.init(element);
+    var chart = echarts.init(document.getElementById(containerID));
     option = {
         title: {
             text: title,
@@ -59,7 +52,7 @@ function renderLineChart(containerID, title, xName, renderData) {
             }
         ]
     };
-    chart.setOption(option);
+    chart.setOption(option)
 }
 
 function renderPieChart(containerID, title, renderData) {

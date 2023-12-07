@@ -1,12 +1,7 @@
-import json
 import mysql.connector
 from flask import Flask, render_template, request, jsonify
-from pyecharts import options as opts
-from pyecharts.charts import Line
-from pyecharts.globals import ThemeType
 from itertools import groupby
 from datetime import datetime, timedelta
-from markupsafe import Markup
 
 # Initialize Flask
 app = Flask(
@@ -41,17 +36,17 @@ def get_month_order_data():
         cursor = connection.cursor()
         
         query = """
-            SELECT
-                DATE(OrderDate) AS OrderDate,
+            SELECT 
+                DATE_FORMAT(OrderDate, '%Y-%m-%d') AS OrderDate,
                 COUNT(OrderId) AS OrderCount
-            FROM
+            FROM 
                 OrderInfo
-            WHERE
+            WHERE 
                 OrderDate >= %s
             GROUP BY
-                DATE(OrderDate)
+                DATE_FORMAT(OrderDate, '%Y-%m-%d')
             ORDER BY
-                DATE(OrderDate);
+                DATE_FORMAT(OrderDate, '%Y-%m-%d');
         """
 
         cursor.execute(query, (start_date,))
@@ -92,7 +87,7 @@ def get_month_sale_data():
 
             query = """
                 SELECT 
-                    DATE(OrderDate) AS OrderDate, 
+                    DATE_FORMAT(OrderDate, '%Y-%m-%d') AS OrderDate, 
                     SUM(TotalOrderPrice) AS TotalSales 
                 FROM 
                     OrderInfo 
@@ -124,6 +119,64 @@ def get_month_sale_data():
 
     except Exception as e:
         return jsonify(error=str(e))
+
+@app.route("/get_category_sale_data")
+def get_category_sale_data():
+    try:
+        # 从数据库查询最近30天每个类别的销售额
+        connection = None
+        try:
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor()
+
+            query = """
+                SELECT 
+                    c.CategoryName, 
+                    SUM(p.ProductPrice * oi.ProductQuantity) AS TotalSales 
+                FROM 
+                    Category c
+                JOIN 
+                    ProductInfo p ON c.CategoryId = p.CategoryId
+                JOIN 
+                    OrderItem oi ON p.ProductId = oi.ProductId
+                JOIN 
+                    OrderInfo o ON oi.OrderId = o.OrderId
+                WHERE 
+                    o.OrderDate >= CURDATE() - INTERVAL 29 DAY 
+                GROUP BY 
+                    c.CategoryName
+                ORDER BY 
+                    TotalSales DESC;
+            """
+
+            cursor.execute(query)
+            result = cursor.fetchall()
+
+            # 记录查询结果
+            app.logger.info("Query result: %s", result)
+
+            # 将查询结果转换为字典，方便后续转为 JSON
+            category_sales_data = [{"value": total_sales, "name": category_name} for category_name, total_sales in result]
+
+            # 记录转换后的数据
+            app.logger.info("Category sales data: %s", category_sales_data)
+
+            return jsonify(category_sales_data)
+
+        except Exception as e:
+            # 记录错误信息
+            app.logger.error("Error: %s", str(e))
+            return jsonify(error=str(e))
+
+        finally:
+            if connection:
+                connection.close()
+
+    except Exception as e:
+        # 记录错误信息
+        app.logger.error("Error: %s", str(e))
+        return jsonify(error=str(e))
+
 
 # Home page
 @app.route("/")
