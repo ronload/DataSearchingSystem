@@ -28,7 +28,7 @@
         <div class="main">
             <div class="banner">
                 <div class="dashboard" id="month-order">
-                    <div class="chart" id="month-sale-chart"></div>
+                    <div class="chart" id="month-order-chart"></div>
                 </div>
                 <div class="dashboard" id="category-sale">
                     <div class="chart" id="category-sale-chart"></div>
@@ -36,7 +36,7 @@
             </div>
             <div class="banner">
                 <div class="dashboard" id="month-sale">
-                    <div class="chart" id="month-order-chart"></div>
+                    <div class="chart" id="month-sale-chart"></div>
                 </div>
             </div>
         </div>
@@ -159,15 +159,56 @@ aside {
 `index.js`
 
 ```javascript
+document.addEventListener("DOMContentLoaded", function () {
+    // 獲取最近30天每天的訂單數量數據
+    fetch("/get_recent_orders_chart_data")
+        .then(response => response.json())
+        .then(data => {
+            renderLineChart("month-order-chart", "最近30天每天訂單數量變化", data, "日期", "訂單數量");
+        })
+        .catch(error => console.error("Error fetching data:", error));
+
+    // ... 其他圖表的請求和渲染 ...
+
+    // 以下是一個簡單的渲染 ECharts 折線圖的函數
+    function renderLineChart(containerId, title, data, xName, yName) {
+        var chart = echarts.init(document.getElementById(containerId));
+
+        var option = {
+            title: {
+                text: title
+            },
+            tooltip: {
+                trigger: "axis"
+            },
+            xAxis: {
+                type: "category",
+                data: data.map(item => item[xName]),
+            },
+            yAxis: {
+                type: "value"
+            },
+            series: [
+                {
+                    name: yName,
+                    type: "line",
+                    data: data.map(item => item[yName]),
+                }
+            ]
+        };
+
+        chart.setOption(option);
+    }
+});
 
 ```
 
 `app.py`
 
-```app.py
+```python
 import json
 import mysql.connector
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from itertools import groupby
 from datetime import datetime, timedelta
 
@@ -187,21 +228,43 @@ db_config = {
     "port": 3306
 }
 
+# 新增一個路由來提供最近30天每天的訂單數量
+@app.route("/get_recent_orders_chart_data", methods=["GET"])
+def get_recent_orders_chart_data():
+    connection = None
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # 查詢最近30天每天的訂單數量
+        cursor.execute("""
+            SELECT DATE(OrderDate) as order_date, COUNT(OrderID) as order_count
+            FROM OrderInfo
+            WHERE OrderDate >= CURDATE() - INTERVAL 30 DAY
+            GROUP BY order_date
+            ORDER BY order_date
+        """)
+        result = cursor.fetchall()
+
+        # 將結果轉換為 JSON 格式
+        chart_data = [{"date": str(row[0]), "count": row[1]} for row in result]
+
+        return jsonify(chart_data)
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)})
+
+    finally:
+        if connection is not None and connection.is_connected():
+            connection.close()
+            cursor.close()
+
+
+
 # Home page
 @app.route("/")
 def index():
-    thirty_days_ago = (datetime.now() - timedelta(days=30)).date()
-    connection = mysql.connector.connect(**db_config)
-    cursor = connection.cursor()
-    cursor.execute('''
-       SELECT OrderInfo.OrderId, OrderDate, COUNT(DISTINCT OrderInfo.OrderId) AS OrderCount, SUM(ProductQuantity) AS TotalProductQuantity
-        FROM OrderInfo
-        LEFT JOIN OrderItem ON OrderInfo.OrderId = OrderItem.OrderId
-        WHERE OrderDate >= %s
-        GROUP BY OrderDate, OrderInfo.OrderId;
-    ''', (thirty_days_ago,))
-    data = cursor.fetchall()
-    return render_template("index.html", data=data)
+    return render_template("index.html")
 
 # Search customer information
 @app.route("/search_CustomerInfo", methods=["GET", "POST"])
@@ -589,7 +652,7 @@ if __name__ == "__main__":
     app.run(debug=True)
 ```
 
-資料庫結構
+`資料庫結構`
 
 ```mysql
 desc CartInfo;
@@ -670,10 +733,10 @@ desc ProductInfo;
 5 rows in set (0.01 sec)
 ```
 
-我的需求是這樣的：
+請幫我利用echart實現以下功能：
 
-1.   `month-sale-chart`：使用折線圖顯示近30天的每日銷售額變化。
-2.   `month-order-chart`：使用折線圖顯示近30天的每日訂單數量變化。
-3.   `category-sale-chart`：使用圓餅圖顯示近30天的各個分類銷量占比。
+1.   在`<div class="chart" id="month-order-chart"></div>`中利用折線圖顯示最近30日內每天的訂單數量變化。我已經提供給你了我的資料庫結構，這意味著你必須將資料庫內的查詢完成。
+2.   在`<div class="chart" id="category-sale-chart"></div>`中利用圓餅圖顯示最近30日內各個分類的銷售數量。我已經提供給你了我的資料庫結構，這意味著你必須將資料庫內的查詢完成。
+3.   在`<div class="chart" id="month-sale-chart"></div>`中利用折線圖顯示最近30日內每天的銷售額變化。我已經提供給你了我的資料庫結構，這意味著你必須將資料庫內的查詢完成。
 
-請依照我的需求，將修改後的`index.html`、`index.js`、`app.py`完整傳送給我。
+請實現以上功能，並提供給我「完整的」`index.html`、`index.js`、`app.py`代碼。

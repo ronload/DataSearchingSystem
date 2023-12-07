@@ -1,8 +1,12 @@
 import json
 import mysql.connector
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+from pyecharts import options as opts
+from pyecharts.charts import Line
+from pyecharts.globals import ThemeType
 from itertools import groupby
 from datetime import datetime, timedelta
+from markupsafe import Markup
 
 # Initialize Flask
 app = Flask(
@@ -20,21 +24,112 @@ db_config = {
     "port": 3306
 }
 
+@app.route("/get_month_order_data")
+def get_month_order_data():
+    # 計算最近30天的日期
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=29)
+    date_range = [start_date + timedelta(days=i) for i in range(30)]
+    
+    # 將日期格式化為字符串
+    xName = [date.strftime("%Y-%m-%d") for date in date_range]
+
+    # 從數據庫查詢近30天的訂單數量
+    connection = None
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+        
+        query = """
+            SELECT
+                DATE(OrderDate) AS OrderDate,
+                COUNT(OrderId) AS OrderCount
+            FROM
+                OrderInfo
+            WHERE
+                OrderDate >= %s
+            GROUP BY
+                DATE(OrderDate)
+            ORDER BY
+                DATE(OrderDate);
+        """
+
+        cursor.execute(query, (start_date,))
+        result = cursor.fetchall()
+
+        # 將查詢結果轉換為字典，方便後續轉為 JSON
+        date_count_dict = dict(result)
+
+        # 根據 xName 生成 renderData
+        renderData = [date_count_dict.get(date, 0) for date in xName]
+
+        return jsonify(xName=xName, renderData=renderData)
+
+    except mysql.connector.Error as err:
+        return f"Error: {err}"
+
+    finally:
+        if connection is not None and connection.is_connected():
+            connection.close()
+            cursor.close()
+
+@app.route("/get_month_sale_data")
+def get_month_sale_data():
+    try:
+        # 計算最近30天的日期
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=29)
+        date_range = [start_date + timedelta(days=i) for i in range(30)]
+
+        # 將日期格式化為字符串
+        xName = [date.strftime("%Y-%m-%d") for date in date_range]
+
+        # 從數據庫查詢近30天每天的總營業額
+        connection = None
+        try:
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor()
+
+            query = """
+                SELECT 
+                    DATE(OrderDate) AS OrderDate, 
+                    SUM(TotalOrderPrice) AS TotalSales 
+                FROM 
+                    OrderInfo 
+                WHERE 
+                    OrderDate >= %s 
+                GROUP BY 
+                    OrderDate 
+                ORDER BY 
+                    OrderDate;
+            """
+
+            cursor.execute(query, (start_date,))
+            result = cursor.fetchall()
+
+            # 將查詢結果轉換為字典，方便後續轉為 JSON
+            date_sales_dict = dict(result)
+
+            # 根據 xName 生成 renderData
+            renderData = [date_sales_dict.get(date, 0) for date in xName]
+
+            return jsonify(xName=xName, renderData=renderData)
+
+        except Exception as e:
+            return jsonify(error=str(e))
+
+        finally:
+            if connection:
+                connection.close()
+
+    except Exception as e:
+        return jsonify(error=str(e))
+
 # Home page
 @app.route("/")
 def index():
-    thirty_days_ago = (datetime.now() - timedelta(days=30)).date()
-    connection = mysql.connector.connect(**db_config)
-    cursor = connection.cursor()
-    cursor.execute('''
-       SELECT OrderInfo.OrderId, OrderDate, COUNT(DISTINCT OrderInfo.OrderId) AS OrderCount, SUM(ProductQuantity) AS TotalProductQuantity
-        FROM OrderInfo
-        LEFT JOIN OrderItem ON OrderInfo.OrderId = OrderItem.OrderId
-        WHERE OrderDate >= %s
-        GROUP BY OrderDate, OrderInfo.OrderId;
-    ''', (thirty_days_ago,))
-    data = cursor.fetchall()
-    return render_template("index.html", data=data)
+    # 將 xName 和 renderData 傳遞到模板中
+    return render_template('index.html')
 
 # Search customer information
 @app.route("/search_CustomerInfo", methods=["GET", "POST"])
