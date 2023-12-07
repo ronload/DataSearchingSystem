@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../static/css/index.css">
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
+    <script src="../static/javascript/echarts.min.js"></script>
     <script src="../static/javascript/index.js"></script>
     <title>E Commerce Backend</title>
 </head>
@@ -45,168 +45,393 @@
 </html>
 ```
 
-`index.css`
+`search_CustomerInfo.html`
 
-```css
-/* 
-background color: #fafafa 
-float block color: #ffffff
-*/
-@charset "utf-8";
-html {
-    background-color: #fafafa;
-    height: 100%;
-}
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/css/search_CustomerInfo.css">
+    <title>Search Customer Info</title>
+</head>
+<body class="wrap">
+    <section class="head">
+        <div>E COMMERCE BACKEND</div>
+    </section>
+    <section class="content">
+        <aside>
+            <a href="/" class="search_button">HOME</a>
+            <a href="search_CustomerInfo" class="search_button">CUSTOMER</a>
+            <a href="search_ProductInfo" class="search_button">PRODUCT</a>
+            <a href="search_OrderInfo" class="search_button">ORDER</a>
+            <a href="search_CartInfo" class="search_button">CART</a>
+        </aside> 
+        <div class="main">
+            <form action="/search_CustomerInfo" method="POST" class="search">
+                <div class="condition">
+                    <div class="input-item">
+                        <label for="by_CustomerID">ID</label><br>
+                        <input type="text" id="by_CustomerID" name="by_CustomerID" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_CustomerName">Name</label><br>
+                        <input type="text" id="by_CustomerName" name="by_CustomerName" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_PhoneNumber">Phone Number</label><br>
+                        <input type="text" id="by_PhoneNumber" name="by_PhoneNumber" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_Address">Address</label><br>
+                        <input type="text" id="by_Address" name="by_Address" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_EmailAddress">Email Address</label><br>
+                        <input type="text" id="by_EmailAddress" name="by_EmailAddress" autocomplete="off">
+                    </div>
+                </div>
+                <input type="submit" value="Search" class="submit">
+            </form>
+            <div class="result">
+                {% if show_no_result %}
+                    <p>No results found.</p>
+                {% endif %}
+                {% if result %}
+                    {% if result %}
+                        <table>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Address</th>
+                                <th>Email Address</th>
+                            </tr>
+                            {% for row in result %}
+                                <tr>
+                                    <td>{{ row[0] }}</td>
+                                    <td>{{ row[1] }}</td>
+                                    <td>{{ row[3] }}</td>
+                                    <td>{{ row[2] }}</td>
+                                    <td>{{ row[4] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+```
 
-.head {
-    font-size: 1.25em;
-    background-color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 4em;
-    border-bottom: 0.5px solid #ccc;
-}
+`search_ProductInfo.html`
 
-body {
-	font-family: "Roboto", Helvetica, sans-serif;
-	font-weight: 100;
-	line-height: 1.75em;
-    align-items: center;
-    margin: 0%;
-}
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/css/search_CartInfo.css">
+    <title>Search Customer Info</title>
+</head>
+<body class="wrap">
+    <section class="head">
+        <div>E COMMERCE BACKEND</div>
+    </section>
+    <section class="content">
+        <aside>
+            <a href="/" class="search_button">HOME</a>
+            <a href="search_CustomerInfo" class="search_button">CUSTOMER</a>
+            <a href="search_ProductInfo" class="search_button">PRODUCT</a>
+            <a href="search_OrderInfo" class="search_button">ORDER</a>
+            <a href="search_CartInfo" class="search_button">CART</a>
+        </aside>
+        <div class="main">
+            <form action="/search_ProductInfo" method="POST" class="search">
+                <div class="condition">
+                    <div class="input-item">
+                        <label for="by_ProductID">Product ID:</label><br>
+                        <input type="text" id="by_ProductID" name="by_ProductID" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_ProductName">Product Name:</label><br>
+                        <input type="text" id="by_ProductName" name="by_ProductName" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_Category">Category:</label><br>
+                        <input type="text" id="by_Category" name="by_Category" autocomplete="off">
+                    </div>
+                </div>
+                <input type="submit" value="Search" class="submit">
+            </form>
+            <div class="result">
+                {% if show_no_result %}
+                    <p>No results found.</p>
+                {% endif %}
+                {% if result %}
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Remain Quantity</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                        </tr>
+                        {% for row in result %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[3] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>${{ row[4] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+```
 
-.wrap {
-    height: 100%;
-}
+`search_OrderInfo.html`
 
-.content {
-    height: 100%;
-    display: flex;
-}
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/css/search_OrderInfo.css">
+    <title>Search Order Info</title>
+</head>
+<body class="wrap">
+    <section class="head">
+        <div>E COMMERCE BACKEND</div>
+    </section>
+    <section class="content">
+        <aside>
+            <a href="/" class="search_button">HOME</a>
+            <a href="search_CustomerInfo" class="search_button">CUSTOMER</a>
+            <a href="search_ProductInfo" class="search_button">PRODUCT</a>
+            <a href="search_OrderInfo" class="search_button">ORDER</a>
+            <a href="search_CartInfo" class="search_button">CART</a>
+        </aside>
+        <div class="main">
+            <form action="/search_OrderInfo" method="POST" class="search">
+                <div class="condition">
+                    <div class="input-item">
+                        <label for="by_OrderID">Order ID:</label>
+                        <input type="text" id="by_OrderID" name="by_OrderID" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_OrderDate">Order Date:</label>
+                        <input type="text" id="by_OrderDate" name="by_OrderDate" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_CustomerID">Customer ID:</label>
+                        <input type="text" id="by_CustomerID" name="by_CustomerID" autocomplete="off">
+                    </div>
+                    <div class="input-item">
+                        <label for="by_PurchaseStatus">Purchase Status</label>
+                        <input type="text" id="by_PurchaseStatus" name="by_PurchaseStatus" autocomplete="off">
+                    </div>
+                </div>
+                <input type="submit" value="Search" class="submit">
+            </form>
+            <div class="result">
+                {% if show_no_result %}
+                    <p>No results found.</p>
+                {% endif %}
+                {% if result %}
+                    <table>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer Name</th>
+                            <th>Total Price</th>
+                            <th>Purchase Status</th>
+                            <th>Products</th>
+                        </tr>
+                        {% for row in result %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>${{ row[3] }}</td>
+                                <td>{{ row[4] }}</td>
+                                <td>{{ row[5] | safe}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+```
 
-aside {
-    display: block;
-    background-color: #ffffff;
-    width: 10em;
-    height: 100%;
-    border-right: 0.5px solid #ccc;
-}
+`search_CartInfo.html`
 
-.search_button {
-    padding-top: 1em;
-    padding-bottom: 1em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.25em larger;
-    text-decoration: none;
-    color: #000000;
-}
-
-.search_button:hover {
-    transform: scale(1.1);
-    transition: all 0.3s ease 0s;
-    background-color: #eaeaea;
-}
-
-.search_button:visited {
-    color: #000000;
-}
-
-.main {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-.banner {
-    display: flex;
-    width: 100%;
-    height: 44%;
-}
-
-.dashboard {
-    text-align: center;
-    background-color: #ffffff;
-    border: 0.5px solid #ccc;
-    border-radius: 3px;
-    margin: 1em;
-    margin-bottom: 0%;
-    padding: 1.5em;
-}
-
-#month-order {
-    width: 50%;
-    margin-right: 0.5em;
-}
-
-#category-sale {
-    width: 50%;
-    margin-left: 0.5em;
-}
-
-#month-sale {
-    width: 100%;
-}
-
-.chart {
-    width: 100%;
-    height: 100%;
-}
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/css/search_CartInfo.css">
+    <title>Search Cart Info</title>
+</head>
+<body class="wrap">
+    <section class="head">
+        <div>E COMMERCE BACKEND</div>
+    </section>
+    <section class="content">
+        <aside>
+            <a href="/" class="search_button">HOME</a>
+            <a href="search_CustomerInfo" class="search_button">CUSTOMER</a>
+            <a href="search_ProductInfo" class="search_button">PRODUCT</a>
+            <a href="search_OrderInfo" class="search_button">ORDER</a>
+            <a href="search_CartInfo" class="search_button">CART</a>
+        </aside> 
+        <div class="main">
+            <form action="/search_CartInfo" method="POST" class="search">
+                <div class="condition">
+                    <div class="input-item">
+                        <label for="by_CustomerID">Customer ID:</label><br>
+                        <input type="text" id="by_CustomerID" name="by_CustomerID" autocomplete="off">
+                    </div>
+                </div>
+                <input type="submit" value="Search" class="submit">
+            </form>
+            <div class="result">
+                {% if show_no_result %}
+                    <p>No results found.</p>
+                {% endif %}
+                {% if result %}
+                    <table>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Total Price</th>
+                            <th>Products</th>
+                        </tr>
+                        {% for row in result %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>${{ row[1] }}</td>
+                                <td>{{ row[2] | safe }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</body>
+</html>
 ```
 
 `index.js`
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function () {
-    // 獲取最近30天每天的訂單數量數據
-    fetch("/get_recent_orders_chart_data")
+    fetch("/get_month_order_data")
         .then(response => response.json())
-        .then(data => {
-            renderLineChart("month-order-chart", "最近30天每天訂單數量變化", data, "日期", "訂單數量");
-        })
-        .catch(error => console.error("Error fetching data:", error));
+        .then(data => { renderLineChart(
+            containerID="month-order-chart",
+            title="ORDERS IN THE PAST 30 DAYS", 
+            xName=data.xName,
+            renderData=data.renderData
+        );
+    })
+    .catch(error => console.error("Error fetching data:", error));
+    fetch("/get_category_sale_data")
+        .then(response => response.json())
+        .then(data => { renderPieChart(
+            containerID="category-sale-chart",
+            title="CATEGORY", 
+            renderData=data
+        );
+    })
+    .catch(error => console.error("Error fetching data:", error));
 
-    // ... 其他圖表的請求和渲染 ...
-
-    // 以下是一個簡單的渲染 ECharts 折線圖的函數
-    function renderLineChart(containerId, title, data, xName, yName) {
-        var chart = echarts.init(document.getElementById(containerId));
-
-        var option = {
-            title: {
-                text: title
-            },
-            tooltip: {
-                trigger: "axis"
-            },
-            xAxis: {
-                type: "category",
-                data: data.map(item => item[xName]),
-            },
-            yAxis: {
-                type: "value"
-            },
-            series: [
-                {
-                    name: yName,
-                    type: "line",
-                    data: data.map(item => item[yName]),
-                }
-            ]
-        };
-
-        chart.setOption(option);
-    }
+    fetch("/get_month_sale_data")
+        .then(response => response.json())
+        .then(data => { renderLineChart(
+            containerID="month-sale-chart",
+            title="SALES IN THE PAST 30 DAYS", 
+            xName=data.xName,
+            renderData=data.renderData
+        );
+    })
+    .catch(error => console.error("Error fetching data:", error));
 });
 
+function renderLineChart(containerID, title, xName, renderData) {
+    var chart = echarts.init(document.getElementById(containerID));
+    option = {
+        title: {
+            text: title,
+            left: 'center'
+        },
+        xAxis: {
+            type: 'category',
+            data: xName
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                data: renderData,
+                type: 'line'
+            }
+        ]
+    };
+    chart.setOption(option)
+}
+
+function renderPieChart(containerID, title, renderData) {
+    var chart = echarts.init(document.getElementById(containerID))
+    option = {
+        title: {
+            text: title,
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left'
+        },
+        series: [{
+            name: 'Access From',
+            type: 'pie',
+            radius: '50%',
+            data: renderData,
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    };
+    chart.setOption(option)
+}
 ```
 
 `app.py`
 
 ```python
-import json
 import mysql.connector
 from flask import Flask, render_template, request, jsonify
 from itertools import groupby
@@ -228,43 +453,138 @@ db_config = {
     "port": 3306
 }
 
-# 新增一個路由來提供最近30天每天的訂單數量
-@app.route("/get_recent_orders_chart_data", methods=["GET"])
-def get_recent_orders_chart_data():
+# fetch api - "ORDERS IN THE PAST 30 DAYS"
+@app.route("/get_month_order_data")
+def get_month_order_data():
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=29)
+    date_range = [start_date + timedelta(days=i) for i in range(30)]
+    
+    xName = [date.strftime("%Y-%m-%d") for date in date_range]
+
     connection = None
     try:
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor()
+        
+        query = """
+            SELECT 
+                DATE_FORMAT(OrderDate, '%Y-%m-%d') AS OrderDate,
+                COUNT(OrderId) AS OrderCount
+            FROM 
+                OrderInfo
+            WHERE 
+                OrderDate >= %s
+            GROUP BY
+                DATE_FORMAT(OrderDate, '%Y-%m-%d')
+            ORDER BY
+                DATE_FORMAT(OrderDate, '%Y-%m-%d');
+        """
 
-        # 查詢最近30天每天的訂單數量
-        cursor.execute("""
-            SELECT DATE(OrderDate) as order_date, COUNT(OrderID) as order_count
-            FROM OrderInfo
-            WHERE OrderDate >= CURDATE() - INTERVAL 30 DAY
-            GROUP BY order_date
-            ORDER BY order_date
-        """)
+        cursor.execute(query, (start_date,))
         result = cursor.fetchall()
 
-        # 將結果轉換為 JSON 格式
-        chart_data = [{"date": str(row[0]), "count": row[1]} for row in result]
+        date_count_dict = dict(result)
+        renderData = [date_count_dict.get(date, 0) for date in xName]
 
-        return jsonify(chart_data)
+        return jsonify(xName=xName, renderData=renderData)
 
     except mysql.connector.Error as err:
-        return jsonify({"error": str(err)})
+        return f"Error: {err}"
 
     finally:
         if connection is not None and connection.is_connected():
             connection.close()
             cursor.close()
 
+# fetch api - "ORDERS IN THE PAST 30 DAYS"
+@app.route("/get_month_sale_data")
+def get_month_sale_data():
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=29)
+    date_range = [start_date + timedelta(days=i) for i in range(30)]
+
+    xName = [date.strftime("%Y-%m-%d") for date in date_range]
+
+    connection = None
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        query = """
+            SELECT 
+                DATE_FORMAT(OrderDate, '%Y-%m-%d') AS OrderDate, 
+                SUM(TotalOrderPrice) AS TotalSales 
+            FROM 
+                OrderInfo 
+            WHERE 
+                OrderDate >= %s 
+            GROUP BY 
+                OrderDate 
+            ORDER BY 
+                OrderDate;
+        """
+
+        cursor.execute(query, (start_date,))
+        result = cursor.fetchall()
+
+        date_sales_dict = dict(result)
+        renderData = [date_sales_dict.get(date, 0) for date in xName]
+
+        return jsonify(xName=xName, renderData=renderData)
+
+    except Exception as err:
+        return jsonify(error=str(err))
+
+    finally:
+        if connection:
+            connection.close()
+
+@app.route("/get_category_sale_data")
+def get_category_sale_data():
+    connection = None
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        query = """
+            SELECT 
+                c.CategoryName, 
+                SUM(p.ProductPrice * oi.ProductQuantity) AS TotalSales 
+            FROM 
+                Category c
+            JOIN 
+                ProductInfo p ON c.CategoryId = p.CategoryId
+            JOIN 
+                OrderItem oi ON p.ProductId = oi.ProductId
+            JOIN 
+                OrderInfo o ON oi.OrderId = o.OrderId
+            WHERE 
+                o.OrderDate >= CURDATE() - INTERVAL 29 DAY 
+            GROUP BY 
+                c.CategoryName
+            ORDER BY 
+                TotalSales DESC;
+        """
+
+        cursor.execute(query)
+        result = cursor.fetchall()
+        category_sales_data = [{"value": total_sales, "name": category_name} for category_name, total_sales in result]
+
+        return jsonify(category_sales_data)
+
+    except Exception as err:
+        return jsonify(error=str(err))
+
+    finally:
+        if connection:
+            connection.close()
 
 
 # Home page
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template('index.html')
 
 # Search customer information
 @app.route("/search_CustomerInfo", methods=["GET", "POST"])
@@ -652,6 +972,8 @@ if __name__ == "__main__":
     app.run(debug=True)
 ```
 
+
+
 `資料庫結構`
 
 ```mysql
@@ -733,10 +1055,4 @@ desc ProductInfo;
 5 rows in set (0.01 sec)
 ```
 
-請幫我利用echart實現以下功能：
-
-1.   在`<div class="chart" id="month-order-chart"></div>`中利用折線圖顯示最近30日內每天的訂單數量變化。我已經提供給你了我的資料庫結構，這意味著你必須將資料庫內的查詢完成。
-2.   在`<div class="chart" id="category-sale-chart"></div>`中利用圓餅圖顯示最近30日內各個分類的銷售數量。我已經提供給你了我的資料庫結構，這意味著你必須將資料庫內的查詢完成。
-3.   在`<div class="chart" id="month-sale-chart"></div>`中利用折線圖顯示最近30日內每天的銷售額變化。我已經提供給你了我的資料庫結構，這意味著你必須將資料庫內的查詢完成。
-
-請實現以上功能，並提供給我「完整的」`index.html`、`index.js`、`app.py`代碼。
+請告訴我，在我的程式碼中有沒有可以進行改進的地方。
