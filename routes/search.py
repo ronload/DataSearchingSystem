@@ -12,8 +12,8 @@ db_config = Config.DB_CONFIG
 search_bp = Blueprint("search", __name__)
 
 # Search customer information
-@search_bp.route("/search_CustomerInfo", methods=["GET", "POST"])
-def search_customer_info():
+@search_bp.route("/customer", methods=["GET", "POST"])
+def customer():
     result = []
     if request.method == "GET":
         connection = mysql.connector.connect(**db_config)
@@ -21,7 +21,7 @@ def search_customer_info():
         cursor.execute("SELECT * FROM CustomerInfo")
         result = cursor.fetchall()
         return render_template(
-            "search_CustomerInfo.html", 
+            "customer.html", 
             result=result, 
             show_no_result=False
         )
@@ -69,7 +69,7 @@ def search_customer_info():
             cursor.close()
             connection.close()
             return render_template(
-                "search_CustomerInfo.html", 
+                "customer.html", 
                 result=result, 
                 show_no_result=(len(result) == 0)
             )
@@ -81,10 +81,10 @@ def search_customer_info():
                 connection.close()
                 cursor.close()
             
-    return render_template("search_CustomerInfo.html", result=result)
+    return render_template("customer.html", result=result)
 
 # Search product information
-@search_bp.route("/search_ProductInfo", methods=["GET", "POST"])
+@search_bp.route("/product", methods=["GET", "POST"])
 def search_product_info():
     connection = None
     try:
@@ -101,7 +101,7 @@ def search_product_info():
 
     if request.method == "GET":
         return render_template(
-            "search_ProductInfo.html", 
+            "product.html", 
             result=result,
             show_no_result=(len(result) == 0)
         )
@@ -140,7 +140,7 @@ def search_product_info():
             cursor.close()
             connection.close()
             return render_template(
-                "search_ProductInfo.html", 
+                "product.html", 
                 result=result, 
                 show_no_result=(len(result) == 0)
             )
@@ -152,10 +152,10 @@ def search_product_info():
                 connection.close()
                 cursor.close()
 
-    return render_template("search_ProductInfo.html", result=result)
+    return render_template("product.html", result=result)
 
 # Search order information
-@search_bp.route("/search_OrderInfo", methods=["GET", "POST"])
+@search_bp.route("/order", methods=["GET", "POST"])
 def search_order_info():
     connection = None
     try:
@@ -198,7 +198,7 @@ def search_order_info():
 
     if request.method == "GET":
         return render_template(
-            "search_OrderInfo.html", 
+            "order.html", 
             result=merged_result,
             show_no_result=(len(merged_result) == 0)
         )
@@ -269,7 +269,7 @@ def search_order_info():
             cursor.close()
             connection.close()
             return render_template(
-                "search_OrderInfo.html", 
+                "order.html", 
                 result=merged_result,
                 show_no_result=(len(merged_result) == 0)
             )
@@ -281,10 +281,10 @@ def search_order_info():
             connection.close()
             cursor.close()
 
-    return render_template("search_OrderInfo.html", result=merged_result)
+    return render_template("order.html", result=merged_result)
 
 # Search cart information
-@search_bp.route("/search_CartInfo", methods=["GET", "POST"])
+@search_bp.route("/cart", methods=["GET", "POST"])
 def search_cart_info():
     connection = None
     try:
@@ -324,7 +324,7 @@ def search_cart_info():
 
     if request.method == "GET":
         return render_template(
-            "search_CartInfo.html", 
+            "cart.html", 
             result=merged_result,
             show_no_result=(len(merged_result) == 0)
         )
@@ -380,7 +380,7 @@ def search_cart_info():
             connection.close()
 
             return render_template(
-                "search_CartInfo.html", 
+                "cart.html", 
                 result=merged_result,
                 show_no_result=(len(merged_result) == 0)
             )
@@ -391,4 +391,4 @@ def search_cart_info():
         finally:
             connection.close()
             cursor.close()
-    return render_template("search_CartInfo.html", result=merged_result)
+    return render_template("cart.html", result=merged_result)
