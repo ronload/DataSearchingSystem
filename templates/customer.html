@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <script src="../static/javascript/echarts.min.js"></script>
+    <script src="../static/javascript/ChartRenderer.js"></script>
+    <script src="../static/javascript/main.js"></script>
     <title>Search Customer Info</title>
 </head>
 <body class="wrap">
@@ -19,6 +22,14 @@
             <a href="cart" class="search_button">CART</a>
         </aside> 
         <div class="main">
+            <div class="banner">
+                <div class="dashboard" id="customer-number">
+                    <div class="chart" id="customer-number-chart"></div>
+                </div>
+                <div class="dashboard" id="customer-rank">
+                    <div class="chart" id="customer-rank-chart"></div>
+                </div>
+            </div>
             <form action="/customer" method="POST" class="search">
                 <div class="condition">
                     <div class="input-item">

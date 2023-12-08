@@ -5,7 +5,11 @@ from flask import Flask
 # routes
 from routes.index import index_bp
 from routes.search import search_bp
-from routes.fetch import fetch_bp
+
+# fetchs
+from fetchs.fetch_index import fetch_index_bp
+from fetchs.fetch_customer import fetch_customer_bp
+from fetchs.fetch_product import fetch_product_bp
 
 # Initialize Flask
 app = Flask(
@@ -14,9 +18,14 @@ app = Flask(
     static_url_path="/static"
 )
 
+# register routes
 app.register_blueprint(index_bp)
 app.register_blueprint(search_bp)
-app.register_blueprint(fetch_bp)
+
+# register fetchs
+app.register_blueprint(fetch_index_bp)
+app.register_blueprint(fetch_customer_bp)
+app.register_blueprint(fetch_product_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)

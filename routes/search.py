@@ -1,13 +1,9 @@
 # routes/search.py
 
-import mysql.connector
-from config import Config
 from flask import Blueprint, render_template, request
-from itertools import groupby
 
-from config import Config
-
-db_config = Config.DB_CONFIG
+from utils import execute_query, build_conditions, merge_search_results
+from queries import SEARCH
 
 search_bp = Blueprint("search", __name__)
 
@@ -15,380 +11,105 @@ search_bp = Blueprint("search", __name__)
 @search_bp.route("/customer", methods=["GET", "POST"])
 def customer():
     result = []
+    query = SEARCH.CUSTOMER
+
     if request.method == "GET":
-        connection = mysql.connector.connect(**db_config)
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM CustomerInfo")
-        result = cursor.fetchall()
-        return render_template(
-            "customer.html", 
-            result=result, 
-            show_no_result=False
-        )
+        result = execute_query(query)
 
     if request.method == "POST":
-        # customer attribute
-        id = request.form.get("by_CustomerID")
-        name = request.form.get("by_CustomerName")
-        phone_number = request.form.get("by_PhoneNumber")
-        address = request.form.get("by_Address")
-        email = request.form.get("by_EmailAddress")
+        conditions, values = build_conditions({
+            "CustomerID": request.form.get("by_CustomerID"),
+            "CustomerName": request.form.get("by_CustomerName"),
+            "PhoneNumber": request.form.get("by_PhoneNumber"),
+            "Address": request.form.get("by_Address"),
+            "Email": request.form.get("by_EmailAddress")
+        })
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+        result = execute_query(query, tuple(values))
 
-        # query
-        connection = None
-        try:
-            # build database connection
-            connection = mysql.connector.connect(**db_config)
-            cursor = connection.cursor()
-            conditions = []
-            values = []
+    return render_template(
+        "customer.html", 
+        result=result, 
+        show_no_result=False
+    )
 
-            # select conditions and values
-            if id:
-                conditions.append("CustomerID LIKE %s")
-                values.append(f"{id}")
-            if name:
-                conditions.append("CustomerName LIKE %s")
-                values.append(f"%{name}%")
-            if phone_number:
-                conditions.append("PhoneNumber LIKE %s")
-                values.append(f"%{phone_number}%")
-            if address:
-                conditions.append("Address LIKE %s")
-                values.append(f"%{address}%")
-            if email:
-                conditions.append("EmailAddress LIKE %s")
-                values.append(f"%{email}%")
-            
-            # build SQL query
-            query = "SELECT * FROM CustomerInfo"
-            if conditions:
-                query += " WHERE " + " AND ".join(conditions)
-            cursor.execute(query, tuple(values))
-            result = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            return render_template(
-                "customer.html", 
-                result=result, 
-                show_no_result=(len(result) == 0)
-            )
-        except mysql.connector.Error as err:
-            return f"Error: {err}"
-        
-        finally:
-            if connection is not None and connection.is_connected():
-                connection.close()
-                cursor.close()
-            
-    return render_template("customer.html", result=result)
 
 # Search product information
 @search_bp.route("/product", methods=["GET", "POST"])
-def search_product_info():
-    connection = None
-    try:
-        connection = mysql.connector.connect(**db_config)
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM ProductInfo")
-        result = cursor.fetchall()
-    except mysql.connector.Error as err:
-        return f"Error: {err}"
-    finally:
-        if connection is not None and connection.is_connected():
-            connection.close()
-            cursor.close()
+def product():
+    result = []
+    query = SEARCH.PRODUCT
 
     if request.method == "GET":
-        return render_template(
-            "product.html", 
-            result=result,
-            show_no_result=(len(result) == 0)
-        )
+        result = execute_query(query)
 
     if request.method == "POST":
-        # product attribute
-        id = request.form.get("by_ProductID")
-        name = request.form.get("by_ProductName")
-        category = request.form.get("by_Category")
+        conditions, values = build_conditions({
+            "ProductID": request.form.get("by_ProductID"),
+            "ProductName": request.form.get("by_ProductName"),
+            "Category": request.form.get("by_Category")
+        })
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+        result = execute_query(query, tuple(values))
 
-        # query
-        try:
-            connection = mysql.connector.connect(**db_config)
-            cursor = connection.cursor()
-            conditions = []
-            values = []
+    return render_template(
+        "product.html", 
+        result=result, 
+        show_no_result=(len(result) == 0)
+    )
 
-            # select conditions and values
-            if id:
-                conditions.append("ProductID LIKE %s")
-                values.append(f"%{id}%")
-            if name:
-                conditions.append("ProductName LIKE %s")
-                values.append(f"%{name}%")
-            if category:
-                conditions.append("Category LIKE %s")
-                values.append(f"%{category}%")
-
-            # build SQL query
-            query = "SELECT * FROM ProductInfo"
-            if conditions:
-                query += " WHERE " + " AND ".join(conditions)
-            cursor.execute(query, tuple(values))
-            result = cursor.fetchall()
-
-            cursor.close()
-            connection.close()
-            return render_template(
-                "product.html", 
-                result=result, 
-                show_no_result=(len(result) == 0)
-            )
-        except mysql.connector.Error as err:
-            return f"Error: {err}"
-
-        finally:
-            if connection is not None and connection.is_connected():
-                connection.close()
-                cursor.close()
-
-    return render_template("product.html", result=result)
-
-# Search order information
 @search_bp.route("/order", methods=["GET", "POST"])
-def search_order_info():
-    connection = None
-    try:
-        connection = mysql.connector.connect(**db_config)
-        cursor = connection.cursor()
-        cursor.execute("""
-            SELECT 
-                OrderInfo.OrderID, 
-                OrderInfo.OrderDate, 
-                CustomerInfo.CustomerName, 
-                OrderInfo.TotalOrderPrice,
-                OrderInfo.PurchaseStatus,
-                ProductInfo.ProductName,
-                OrderItem.ProductQuantity
-            FROM 
-                OrderInfo
-            JOIN 
-                OrderItem ON OrderInfo.OrderID = OrderItem.OrderID
-            JOIN 
-                ProductInfo ON OrderItem.ProductID = ProductInfo.ProductID
-            JOIN 
-                CustomerInfo ON OrderInfo.CustomerID = CustomerInfo.CustomerID
-            GROUP BY OrderInfo.OrderID, ProductInfo.ProductID
-        """)
-        result = cursor.fetchall()
-
-        # Merged searching result
-        merged_result = []
-        for key, group in groupby(result, key=lambda x: x[:5]):
-            order_info = key
-            products = [f"{row[5]} * {row[6]}" for row in group]
-            merged_products = '<br>'.join(products)
-            merged_result.append(order_info + (merged_products,))
-    except mysql.connector.Error as err:
-        return f"Error: {err}"
-    finally:
-        if connection is not None and connection.is_connected():
-            connection.close()
-            cursor.close()
+def order():
+    result = []
+    query = SEARCH.ORDER
 
     if request.method == "GET":
-        return render_template(
-            "order.html", 
-            result=merged_result,
-            show_no_result=(len(merged_result) == 0)
-        )
+        result = execute_query(query)
 
     if request.method == "POST":
-        # order attribute
-        order_id = request.form.get("by_OrderID")
-        date = request.form.get("by_OrderDate")
-        customer_id = request.form.get("by_CustomerID")
-        purchase_status = request.form.get("by_PurchaseStatus")
+        conditions, values = build_conditions({
+            "OrderID": request.form.get("by_OrderID"),
+            "OrderDate": request.form.get("by_OrderDate"),
+            "CustomerID": request.form.get("by_CustomerID"),
+            "PurchaseStatus": request.form.get("by_PurchaseStatus")
+        })
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
 
-        # query
-        try:
-            # build database connection
-            connection = mysql.connector.connect(**db_config)
-            cursor = connection.cursor()
-            conditions = []
-            values = []
+        result = execute_query(query, tuple(values))
 
-            # select conditions and values
-            if order_id:
-                conditions.append("OrderInfo.OrderID LIKE %s")
-                values.append(f"%{order_id}%")
-            if date:
-                conditions.append("OrderDate LIKE %s")
-                values.append(f"%{date}%")
-            if customer_id:
-                conditions.append("CustomerInfo.CustomerID LIKE %s")
-                values.append(f"%{customer_id}%")
-            if purchase_status:
-                conditions.append("PurchaseStatus LIKE %s")
-                values.append(f"%{purchase_status}%")
+    merged_result = merge_search_results(result, (0, 4), (5, 6))
 
-            # build SQL query
-            query = """
-                SELECT 
-                    OrderInfo.OrderID, 
-                    OrderInfo.OrderDate, 
-                    CustomerInfo.CustomerName, 
-                    OrderInfo.TotalOrderPrice,
-                    OrderInfo.PurchaseStatus,
-                    ProductInfo.ProductName,
-                    OrderItem.ProductQuantity
-                FROM 
-                    OrderInfo
-                JOIN 
-                    OrderItem ON OrderInfo.OrderID = OrderItem.OrderID
-                JOIN 
-                    ProductInfo ON OrderItem.ProductID = ProductInfo.ProductID
-                JOIN 
-                    CustomerInfo ON OrderInfo.CustomerID = CustomerInfo.CustomerID
-            """
-
-            if conditions:
-                query += " WHERE " + " AND ".join(conditions)
-            query += " GROUP BY OrderInfo.OrderID, ProductInfo.ProductID"
-            cursor.execute(query, tuple(values))
-            result = cursor.fetchall()
-
-            # merged searching result
-            merged_result = []
-            for key, group in groupby(result, key=lambda x: x[:5]):
-                order_info = key
-                products = [f"{row[5]} * {row[6]}" for row in group]
-                merged_products = '<br>'.join(products)
-                merged_result.append(order_info + (merged_products,))
-
-            cursor.close()
-            connection.close()
-            return render_template(
-                "order.html", 
-                result=merged_result,
-                show_no_result=(len(merged_result) == 0)
-            )
-
-        except mysql.connector.Error as err:
-            return f"Error: {err}"
-        
-        finally:
-            connection.close()
-            cursor.close()
-
-    return render_template("order.html", result=merged_result)
+    return render_template(
+        "order.html", 
+        result=merged_result,
+        show_no_result=(len(merged_result) == 0)
+    )
 
 # Search cart information
 @search_bp.route("/cart", methods=["GET", "POST"])
-def search_cart_info():
-    connection = None
-    try:
-        connection = mysql.connector.connect(**db_config)
-        cursor = connection.cursor()
-        cursor.execute("""
-            SELECT 
-                CustomerInfo.CustomerName, 
-                CartInfo.TotalCartPrice,
-                ProductInfo.ProductName,
-                CartItem.ProductQuantity
-            FROM 
-                CartInfo
-            JOIN 
-                CartItem ON CartInfo.CartID = CartItem.CartID
-            JOIN 
-                ProductInfo ON CartItem.ProductID = ProductInfo.ProductID
-            JOIN 
-                CustomerInfo ON CartInfo.CustomerID = CustomerInfo.CustomerID
-            GROUP BY CartInfo.CartID, ProductInfo.ProductID
-        """)
-        result = cursor.fetchall()
-
-        # Merged searching result
-        merged_result = []
-        for key, group in groupby(result, key=lambda x: x[:2]):
-            cart_info = key
-            products = [f"{row[2]} * {row[3]}" for row in group]
-            merged_products = '<br>'.join(products)
-            merged_result.append(cart_info + (merged_products,))
-    except mysql.connector.Error as err:
-        return f"Err: {err}"
-    finally:
-        if connection is not None and connection.is_connected():
-            connection.close()
-            cursor.close()
+def cart():
+    result = []
+    query = SEARCH.CART
 
     if request.method == "GET":
-        return render_template(
-            "cart.html", 
-            result=merged_result,
-            show_no_result=(len(merged_result) == 0)
-        )
+        result = execute_query(query)
 
     if request.method == "POST":
-        # cart attribute
-        id = request.form.get("by_CustomerID")
-        
-        # query
-        try:
-            # build connection
-            connection = mysql.connector.connect(**db_config)
-            cursor = connection.cursor()
-            conditions = []
-            values = []
+        conditions, values = build_conditions({
+            "CustomerID": request.form.get("by_CustomerID")
+        })
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+        query +=  " GROUP BY CartInfo.CartID, ProductInfo.ProductID"
+        result = execute_query(query, tuple(values))
+    
+    merged_result = merge_search_results(result, (0, 1), (2, 3))
 
-            # select condition and value
-            if id:
-                conditions.append("CustomerInfo.CustomerID LIKE %s")
-                values.append(f"%{id}%")
-            
-            # build sql query
-            query = """
-                SELECT 
-                    CustomerInfo.CustomerName, 
-                    CartInfo.TotalCartPrice,
-                    ProductInfo.ProductName,
-                    CartItem.ProductQuantity
-                FROM 
-                    CartInfo
-                JOIN 
-                    CartItem ON CartInfo.CartID = CartItem.CartID
-                JOIN 
-                    ProductInfo ON CartItem.ProductID = ProductInfo.ProductID
-                JOIN 
-                    CustomerInfo ON CartInfo.CustomerID = CustomerInfo.CustomerID
-            """
-
-            if conditions:
-                query += " WHERE " + " AND ".join(conditions)
-            query +=  " GROUP BY CartInfo.CartID, ProductInfo.ProductID"
-            cursor.execute(query, tuple(values))
-            result = cursor.fetchall()
-            
-            # merged searching result
-            merged_result = []
-            for key, group in groupby(result, key=lambda x: x[:2]):
-                cart_info = key
-                products = [f"{row[2]} * {row[3]}" for row in group]
-                merged_products = '<br>'.join(products)
-                merged_result.append(cart_info + (merged_products,))
-            cursor.close()
-            connection.close()
-
-            return render_template(
-                "cart.html", 
-                result=merged_result,
-                show_no_result=(len(merged_result) == 0)
-            )
-
-        except mysql.connector.Error as err:
-            return f"Err: {err}"
-        
-        finally:
-            connection.close()
-            cursor.close()
-    return render_template("cart.html", result=merged_result)
+    return render_template(
+        "cart.html", 
+        result=merged_result,
+        show_no_result=(len(merged_result) == 0)
+    )
