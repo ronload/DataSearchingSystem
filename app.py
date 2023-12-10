@@ -6,10 +6,10 @@ from flask import Flask
 from routes.index import index_bp
 from routes.search import search_bp
 
-# fetchs
-from fetchs.fetch_index import fetch_index_bp
-from fetchs.fetch_customer import fetch_customer_bp
-from fetchs.fetch_product import fetch_product_bp
+# fetches
+from fetches.fetch_index import fetch_index_bp
+from fetches.fetch_customer import fetch_customer_bp
+from fetches.fetch_product import fetch_product_bp
 
 # Initialize Flask
 app = Flask(
